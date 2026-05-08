@@ -1,0 +1,113 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "WMS.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/WMS.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/WMS.Domain.dll": {}
+        }
+      },
+      "WMS.Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/WMS.Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/WMS.Shared.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "WMS.Domain/1.0.0": {
+      "type": "project",
+      "path": "../WMS.Domain/WMS.Domain.csproj",
+      "msbuildProject": "../WMS.Domain/WMS.Domain.csproj"
+    },
+    "WMS.Shared/1.0.0": {
+      "type": "project",
+      "path": "../WMS.Shared/WMS.Shared.csproj",
+      "msbuildProject": "../WMS.Shared/WMS.Shared.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "WMS.Domain >= 1.0.0",
+      "WMS.Shared >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\pct122\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\Project\\WMS\\WMS-BE\\WMS.Application\\WMS.Application.csproj",
+      "projectName": "WMS.Application",
+      "projectPath": "D:\\Project\\WMS\\WMS-BE\\WMS.Application\\WMS.Application.csproj",
+      "packagesPath": "C:\\Users\\pct122\\.nuget\\packages\\",
+      "outputPath": "D:\\Project\\WMS\\WMS-BE\\WMS.Application\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\pct122\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "D:\\Project\\WMS\\WMS-BE\\WMS.Domain\\WMS.Domain.csproj": {
+              "projectPath": "D:\\Project\\WMS\\WMS-BE\\WMS.Domain\\WMS.Domain.csproj"
+            },
+            "D:\\Project\\WMS\\WMS-BE\\WMS.Shared\\WMS.Shared.csproj": {
+              "projectPath": "D:\\Project\\WMS\\WMS-BE\\WMS.Shared\\WMS.Shared.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
