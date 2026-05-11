@@ -2,3 +2,21 @@ bin
 obj
 .vs
 .env
+
+# ── .NET specific
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+launchSettings.json
+
+# ── Secrets
+appsettings.Development.json
+*.pfx
+
+# ── Migrations (optional — some teams commit these)
+# */Migrations/
+
+# ── Rider / VS Code
+.idea
+.vscode
