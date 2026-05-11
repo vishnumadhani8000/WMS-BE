@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WMS.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a86a0259f8b6a81b7833418116d55c1b109756b8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14fe25bd85046b7a9e56bd67b00d377e1e2d8479")]
 [assembly: System.Reflection.AssemblyProductAttribute("WMS.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WMS.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
