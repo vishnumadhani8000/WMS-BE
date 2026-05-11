@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace WMS.Domain.Interfaces;
+namespace WMS.Application;
 
 public interface ICommonRepository<T> where T : class
 {

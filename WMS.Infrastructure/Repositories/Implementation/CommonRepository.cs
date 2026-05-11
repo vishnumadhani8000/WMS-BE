@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using WMS.Application;
 using WMS.Domain.Common;
-using WMS.Domain.Interfaces;
 using WMS.Infrastructure.Data;
 
 namespace WMS.Infrastructure.Repositories;
