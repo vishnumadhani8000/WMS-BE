@@ -20,10 +20,9 @@ public class AdminController : ControllerBase
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateAdmin(
-        [FromBody] SignUpRequestDto request,
-        CancellationToken ct)
+        [FromBody] SignUpRequestDto request)
     {
-        var result = await _authService.CreateAdminAsync(request, ct);
+        var result = await _authService.CreateAdminAsync(request);
         return CreatedAtAction(nameof(CreateAdmin), result);
     }
 }

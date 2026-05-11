@@ -1,11 +1,12 @@
 using WMS.Application.DTOs.Auth;
+using WMS.Shared.Response;
 
 namespace WMS.Application.Interfaces;
 
 public interface IAuthService
-{   Task<SignUpResponseDto> CreateAdminAsync(SignUpRequestDto request, CancellationToken ct = default);
-    Task<SignUpResponseDto>  SignUpAsync(SignUpRequestDto request, CancellationToken ct = default);
-    Task<LoginResponseDto> LoginAsync(LoginRequestDto request, CancellationToken ct = default);
-    Task<LoginResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request, CancellationToken ct = default);
-    Task LogoutAsync(string refreshToken, CancellationToken ct = default);
+{   Task<SignUpResponseDto> CreateAdminAsync(SignUpRequestDto request);
+    Task<SignUpResponseDto>  SignUpAsync(SignUpRequestDto request);
+    Task<LoginResponseDto> LoginAsync(LoginRequestDto request);
+   Task<ApiResponse<LoginResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request);
+    Task LogoutAsync(string refreshToken);
 }
