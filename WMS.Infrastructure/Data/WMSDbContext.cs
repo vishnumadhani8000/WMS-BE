@@ -19,6 +19,7 @@ public class WmsDbContext : DbContext
     public DbSet<Driver>      Drivers      => Set<Driver>();
     public DbSet<Vehicle>     Vehicles     => Set<Vehicle>();
     public DbSet<Shipment>    Shipments    => Set<Shipment>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
