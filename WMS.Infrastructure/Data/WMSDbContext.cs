@@ -41,15 +41,19 @@ public class WmsDbContext : DbContext
 
     private void SetAuditFields()
     {
-        var entries = ChangeTracker.Entries<BaseEntity>()
-            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+        var entries = ChangeTracker.Entries<BaseEntity>();
 
         foreach (var entry in entries)
         {
-            entry.Entity.UpdatedAt = DateTime.UtcNow;
-
             if (entry.State == EntityState.Added)
+            {
                 entry.Entity.CreatedAt = DateTime.UtcNow;
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
         }
     }
 }
