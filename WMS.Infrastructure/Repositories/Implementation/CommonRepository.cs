@@ -14,7 +14,7 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
     public CommonRepository(WmsDbContext context)
     {
         _context = context;
-        _dbSet   = context.Set<T>();
+        _dbSet = context.Set<T>();
     }
 
     public async Task<T?> GetByIdAsync(long id, CancellationToken ct = default)
@@ -50,5 +50,23 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
         entity.DeletedAt = DateTime.UtcNow;
         _dbSet.Update(entity);
         await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task<IEnumerable<T>> GetPagedAsync(Expression<Func<T, bool>> predicate, int pageNumber, int pageSize, CancellationToken ct = default)
+    {
+        return await _dbSet
+        .Where(predicate)
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync(ct);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+    {
+        return await _dbSet.CountAsync(predicate, ct); ;
+    }
+    public IQueryable<T> Query()
+    {
+        return _dbSet.AsQueryable();
     }
 }
