@@ -18,7 +18,6 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(x => x.CapacityKg)  .IsRequired().HasColumnType("decimal(10,2)");
         builder.Property(x => x.IsAvailable) .IsRequired().HasDefaultValue(true);
         builder.Property(x => x.CreatedAt)   .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)   .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)   .IsRequired(false);
         builder.Property(x => x.CreatedBy)   .IsRequired(false);
         builder.Property(x => x.UpdatedBy)   .IsRequired(false);

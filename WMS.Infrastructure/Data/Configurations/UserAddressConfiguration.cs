@@ -18,7 +18,6 @@ public class UserAddressConfiguration : IEntityTypeConfiguration<UserAddress>
         builder.Property(x => x.Pincode)    .IsRequired().HasMaxLength(10);
         builder.Property(x => x.IsDefault)  .IsRequired().HasDefaultValue(false);
         builder.Property(x => x.CreatedAt)  .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)  .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)  .IsRequired(false);
 
         builder.HasIndex(x => x.UserId)    .HasDatabaseName("user_addresses_user_id_idx");

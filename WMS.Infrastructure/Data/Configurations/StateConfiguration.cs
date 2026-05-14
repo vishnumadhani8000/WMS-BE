@@ -15,7 +15,6 @@ public class StateConfiguration : IEntityTypeConfiguration<State>
 
         builder.Property(x => x.Name)      .IsRequired().HasMaxLength(100);
         builder.Property(x => x.CreatedAt) .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt) .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt) .IsRequired(false);
         builder.Property(x => x.CreatedBy) .IsRequired(false);
         builder.Property(x => x.UpdatedBy) .IsRequired(false);

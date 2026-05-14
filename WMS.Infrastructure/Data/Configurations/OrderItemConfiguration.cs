@@ -17,7 +17,6 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.Property(x => x.UnitWeightKg)  .IsRequired().HasColumnType("decimal(10,3)");
         builder.Property(x => x.LineWeightKg)  .IsRequired().HasColumnType("decimal(12,3)");
         builder.Property(x => x.CreatedAt)     .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)     .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)     .IsRequired(false);
 
         builder.HasIndex(x => x.OrderId)   .HasDatabaseName("order_items_order_id_idx");

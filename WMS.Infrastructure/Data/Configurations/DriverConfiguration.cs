@@ -18,7 +18,6 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
         builder.Property(x => x.LicenceNo)   .HasMaxLength(50);
         builder.Property(x => x.IsAvailable) .IsRequired().HasDefaultValue(true);
         builder.Property(x => x.CreatedAt)   .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)   .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)   .IsRequired(false);
         builder.Property(x => x.CreatedBy)   .IsRequired(false);
         builder.Property(x => x.UpdatedBy)   .IsRequired(false);

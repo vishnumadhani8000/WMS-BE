@@ -18,7 +18,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Stock)       .IsRequired().HasDefaultValue(0);
         builder.Property(x => x.Description) .IsRequired(false);
         builder.Property(x => x.CreatedAt)   .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)   .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)   .IsRequired(false);
         builder.Property(x => x.CreatedBy)   .IsRequired(false);
         builder.Property(x => x.UpdatedBy)   .IsRequired(false);

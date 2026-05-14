@@ -18,7 +18,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(x => x.Notes)         .IsRequired(false);
         builder.Property(x => x.ShipmentId)    .IsRequired(false);
         builder.Property(x => x.CreatedAt)     .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)     .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)     .IsRequired(false);
         builder.Property(x => x.CreatedBy)     .IsRequired(false);
         builder.Property(x => x.UpdatedBy)     .IsRequired(false);

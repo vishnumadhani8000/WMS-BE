@@ -31,4 +31,3 @@ appsettings.Development.json
 Thumbs.db
 
 # Optional: Ignore migrations
-# */Migrations/
