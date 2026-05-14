@@ -20,7 +20,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Phone)        .HasMaxLength(20);
         builder.Property(x => x.IsActive)     .IsRequired().HasDefaultValue(true);
         builder.Property(x => x.CreatedAt)    .IsRequired().HasDefaultValueSql("now()");
-        builder.Property(x => x.UpdatedAt)    .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)    .IsRequired(false);
 
         builder.HasIndex(x => x.Email)     .IsUnique().HasDatabaseName("users_email_uidx");
