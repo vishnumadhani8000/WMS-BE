@@ -7,7 +7,7 @@ namespace WMS.Infrastructure.Data;
 public class WmsDbContext : DbContext
 {
     public WmsDbContext(DbContextOptions<WmsDbContext> options) : base(options) { }
-
+    
     // ── DbSets
     public DbSet<User>        Users        => Set<User>();
     public DbSet<State>       States       => Set<State>();

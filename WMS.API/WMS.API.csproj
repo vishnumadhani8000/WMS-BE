@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.23" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WMS.Application\WMS.Application.csproj" />
     <ProjectReference Include="..\WMS.Infrastructure\WMS.Infrastructure.csproj" />
+    <ProjectReference Include="..\WMS.Domain\WMS.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-namespace WMS.Domain.Common;
+    namespace WMS.Domain.Common;
 
 public class PagedResult<T>
 {
