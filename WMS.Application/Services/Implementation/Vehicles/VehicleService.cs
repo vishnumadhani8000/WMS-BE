@@ -25,39 +25,33 @@ public class VehicleService : IVehicleService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(
-        int pageNumber,
-        int pageSize,
-        string? search,
-        string? sortBy,
-        bool ascending
-    )
+    public async Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(CommonFilterDto requestDto)
     {
         IQueryable<Vehicle> query = _repository.Query();
 
         // Search
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(requestDto.Search))
         {
-            search = search.Trim().ToLower();
+            requestDto.Search = requestDto.Search.Trim().ToLower();
 
             query = query.Where(x =>
-                x.Name.ToLower().Contains(search) ||
-                x.PlateNumber.ToLower().Contains(search)
+                x.Name.ToLower().Contains(requestDto.Search) ||
+                x.PlateNumber.ToLower().Contains(requestDto.Search)
             );
         }
 
         // Sorting
-        query = sortBy?.ToLower() switch
+        query = requestDto.SortBy?.ToLower() switch
         {
-            "name" => ascending
+            "name" => requestDto.Ascending
                 ? query.OrderBy(x => x.Name)
                 : query.OrderByDescending(x => x.Name),
 
-            "capacitykg" => ascending
+            "capacitykg" => requestDto.Ascending
                 ? query.OrderBy(x => x.CapacityKg)
                 : query.OrderByDescending(x => x.CapacityKg),
 
-            "platenumber" => ascending
+            "platenumber" => requestDto.Ascending
                 ? query.OrderBy(x => x.PlateNumber)
                 : query.OrderByDescending(x => x.PlateNumber),
 
@@ -66,8 +60,8 @@ public class VehicleService : IVehicleService
         var totalCount = await query.CountAsync();
 
         var vehicles = await query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((requestDto.PageNumber - 1) * requestDto.PageSize)
+            .Take(requestDto.PageSize)
             .ToListAsync();
 
         var vehicleDtos =
@@ -77,8 +71,8 @@ public class VehicleService : IVehicleService
         {
             Items = vehicleDtos,
             TotalCount = totalCount,
-            PageNumber = pageNumber,
-            PageSize = pageSize,
+            PageNumber = requestDto.PageNumber,
+            PageSize = requestDto.PageSize,
         };
 
         return ApiResponse<PagedResult<VehicleResponseDto>>
@@ -106,8 +100,7 @@ public class VehicleService : IVehicleService
 
     public async Task<ApiResponse<VehicleResponseDto>> CreateAsync(
     VehicleRequestDto dto,
-    long userId
-)
+    long userId)
     {
 
         dto.PlateNumber = dto.PlateNumber

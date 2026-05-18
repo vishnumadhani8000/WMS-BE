@@ -2,43 +2,43 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.DTOs.State;
 using WMS.Application.Interfaces;
-using WMS.Domain.Common;
+using WMS.Domain.Entities;
 
 namespace WMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class StateController : ControllerBase
+public class CityController : ControllerBase
 {
-    private readonly IStateService _stateService;
-    public StateController(IStateService stateService)
+    private readonly ICityService _cityService;
+
+
+    public CityController(ICityService cityService)
     {
-        _stateService = stateService;
+        _cityService = cityService;
     }
 
-
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-      [FromQuery] CommonFilterDto request)
+    public async Task<IActionResult> GetAll([FromQuery] CityFilterRequestDTO request)
     {
-        var result = await _stateService.GetAllAsync(request);
+        var result = await _cityService.GetAllAsync(request);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-
+  
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id)
     {
-        var result = await _stateService.GetByIdAsync(id);
+        var result = await _cityService.GetByIdAsync(id);
         return result.IsSuccess ? Ok(result) : NotFound(result);
     }
 
-
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] StateRequestDTO dto)
+    public async Task<IActionResult> Create([FromBody] CityRequestDTO dto)
     {
-
-        var userIdClaim =
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+            var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
@@ -46,17 +46,14 @@ public class StateController : ControllerBase
             return Unauthorized();
         }
 
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _stateService.CreateAsync(dto, userId);
+        var result = await _cityService.CreateAsync(dto, userId);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
+   
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] StateRequestDTO dto)
-    {
-
+    public async Task<IActionResult> Update(long id, [FromBody] CityRequestDTO dto)
+    {   
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -66,22 +63,22 @@ public class StateController : ControllerBase
         }
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
+            
 
-        var result = await _stateService.UpdateAsync(id, dto, userId);
+        var result = await _cityService.UpdateAsync(id, dto, userId);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
-    {
-        var userIdClaim =
+    {   var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
-        var result = await _stateService.DeleteAsync(id, userId);
+        var result = await _cityService.DeleteAsync(id, userId);
         return result.IsSuccess ? Ok(result) : NotFound(result);
     }
 }

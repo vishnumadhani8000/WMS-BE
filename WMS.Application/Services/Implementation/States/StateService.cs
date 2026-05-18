@@ -21,31 +21,45 @@ public class StateService : IStateService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<StateResponceListDTO>>> GetAllAsync(
-        int pageNumber,
-        int pageSize)
+    public async Task<ApiResponse<PagedResult<StateResponseDTO>>> GetAllAsync(CommonFilterDto requestDTO)
     {
         IQueryable<State> query = _repository
             .Query();
+            
+        if (!string.IsNullOrWhiteSpace(requestDTO.Search))
+        {
+            requestDTO.Search = requestDTO.Search.Trim().ToLower();
 
+            query = query.Where(x =>
+                x.Name.ToLower().Contains(requestDTO.Search)
+            );
+        }
+
+        query = requestDTO.SortBy?.ToLower() switch
+        {
+            "name" => requestDTO.Ascending
+                ? query.OrderBy(x => x.Name)
+                : query.OrderByDescending(x => x.Name),
+
+            _ => query.OrderByDescending(x => x.CreatedAt)
+        };
         var totalCount = await query.CountAsync();
 
         var states = await query
-            .OrderByDescending(x => x.CreatedAt)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((requestDTO.PageNumber - 1) * requestDTO.PageSize)
+            .Take(requestDTO.PageSize)
             .ToListAsync();
 
-        var result = new PagedResult<StateResponceListDTO>
+        var result = new PagedResult<StateResponseDTO>
         {
-            Items = _mapper.Map<List<StateResponceListDTO>>(states),
+            Items = _mapper.Map<List<StateResponseDTO>>(states),
             TotalCount = totalCount,
-            PageNumber = pageNumber,
-            PageSize = pageSize,
+            PageNumber = requestDTO.PageNumber,
+            PageSize = requestDTO.PageSize,
         };
 
-        return ApiResponse<PagedResult<StateResponceListDTO>>
-            .Success(result, "States fetched successfully.");
+        return ApiResponse<PagedResult<StateResponseDTO>>
+            .Success(result, "States fetched s  uccessfully.");
     }
 
     public async Task<ApiResponse<StateResponseDTO>> GetByIdAsync(long id)

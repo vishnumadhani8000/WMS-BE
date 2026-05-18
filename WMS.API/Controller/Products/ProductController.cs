@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using WMS.Application.DTOs.Products;
 using WMS.Application.Interfaces;
+using WMS.Domain.Common;
 
 namespace WMS.API.Controllers;
 
@@ -21,21 +22,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery] string? search = null,
-        [FromQuery] string? sortBy = null,
-        [FromQuery] bool ascending = true
-    )
+    public async Task<IActionResult> GetAll([FromQuery] CommonFilterDto filterDto)
     {
-        var result = await _service.GetAllAsync(
-            pageNumber,
-            pageSize,
-            search,
-            sortBy,
-            ascending
-        );
+        var result = await _service.GetAllAsync(filterDto);
 
         return Ok(result);
     }

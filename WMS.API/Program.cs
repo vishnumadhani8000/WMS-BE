@@ -96,6 +96,9 @@ builder.Services.AddScoped<IVehicleService,VehicleService>();
 //--State-Management
 builder.Services.AddScoped<IStateService, StateService>();
 
+//--City-Management
+builder.Services.AddScoped<ICityService, CityService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
