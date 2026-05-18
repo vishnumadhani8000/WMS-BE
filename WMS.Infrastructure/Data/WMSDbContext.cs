@@ -39,21 +39,27 @@ public class WmsDbContext : DbContext
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    private void SetAuditFields()
+private void SetAuditFields()
+{
+    var entries = ChangeTracker.Entries<BaseEntity>();
+
+    foreach (var entry in entries)
     {
-        var entries = ChangeTracker.Entries<BaseEntity>();
-
-        foreach (var entry in entries)
+        if (entry.State == EntityState.Added)
         {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.UtcNow;
-            }
+            entry.Entity.CreatedAt = DateTime.UtcNow;
+        }
 
-            if (entry.State == EntityState.Modified)
-            {
-                entry.Entity.UpdatedAt = DateTime.UtcNow;
-            }
+        if (entry.State == EntityState.Modified)
+        {
+            entry.Entity.UpdatedAt = DateTime.UtcNow;
+        }
+
+        if (entry.State == EntityState.Deleted)
+        {
+            entry.State = EntityState.Modified;
+
+            entry.Entity.DeletedAt = DateTime.UtcNow;
         }
     }
-}
+}}

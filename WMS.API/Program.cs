@@ -90,6 +90,9 @@ builder.Services.AddScoped<IProductService, ProductService>();
 //--AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
+//---Vehicle-MAnagement
+builder.Services.AddScoped<IVehicleService,VehicleService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -101,7 +104,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "WMS API",
-        Version = "v1"
+        Version = "v1"  
     });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

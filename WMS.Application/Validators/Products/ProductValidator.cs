@@ -4,10 +4,10 @@ using WMS.Application.DTOs.Products;
 
 namespace WMS.Application.Validators.Products;
 
-public class CreateProductValidator 
-    : AbstractValidator<CreateProductDto>
+public class ProductValidator 
+    : AbstractValidator<ProductRequestDto>
 {
-    public CreateProductValidator()
+    public ProductValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()
