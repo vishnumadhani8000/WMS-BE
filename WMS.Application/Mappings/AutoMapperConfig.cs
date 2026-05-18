@@ -1,6 +1,7 @@
 using AutoMapper;
 
 using WMS.Application.DTOs.Products;
+using WMS.Application.DTOs.State;
 using WMS.Application.DTOs.Vehicles;
 using WMS.Domain.Entities;
 
@@ -12,6 +13,7 @@ public class AutoMapperConfig : Profile
     {
         ProductMappings();
         VehicleMappings();
+        StateMappings();
     }
 
     private void ProductMappings()
@@ -68,6 +70,22 @@ public class AutoMapperConfig : Profile
             .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
             .ForMember(dest => dest.DeletedBy, opt => opt.Ignore());
     }
+ 
+    private void StateMappings()
+    {
+        CreateMap<State, StateResponseDTO>();
+        CreateMap<State, StateResponceListDTO>();
 
+        CreateMap<StateRequestDTO, State>()
+            .ForMember(dest => dest.Id,        opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt,  opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy,  opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt,  opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedBy,  opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedAt,  opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedBy,  opt => opt.Ignore())
+            .ForMember(dest => dest.Cities,     opt => opt.Ignore())
+            .ForMember(dest => dest.Addresses,  opt => opt.Ignore());
+    }
 
 }
