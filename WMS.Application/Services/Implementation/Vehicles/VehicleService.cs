@@ -53,17 +53,16 @@ public class VehicleService : IVehicleService
                 ? query.OrderBy(x => x.Name)
                 : query.OrderByDescending(x => x.Name),
 
-            "capacity" => ascending
+            "capacitykg" => ascending
                 ? query.OrderBy(x => x.CapacityKg)
                 : query.OrderByDescending(x => x.CapacityKg),
 
-            "plate" => ascending
+            "platenumber" => ascending
                 ? query.OrderBy(x => x.PlateNumber)
                 : query.OrderByDescending(x => x.PlateNumber),
 
             _ => query.OrderByDescending(x => x.CreatedAt),
         };
-
         var totalCount = await query.CountAsync();
 
         var vehicles = await query
@@ -110,9 +109,9 @@ public class VehicleService : IVehicleService
     long userId
 )
     {
-        // Normalize plate number
+
         dto.PlateNumber = dto.PlateNumber
-            ?.Trim()
+            .Trim()
             .Replace(" ", "")
             .Replace("-", "")
             .ToUpper();
@@ -148,15 +147,15 @@ public class VehicleService : IVehicleService
             );
     }
 
-    public async Task<ApiResponse<object>> UpdateAsync(
-    long id,
-    VehicleRequestDto dto,
-    long userId
-)
+    public async Task<ApiResponse<VehicleResponseDto>> UpdateAsync(
+     long id,
+     VehicleRequestDto dto,
+     long userId
+ )
     {
         // Normalize plate number
         dto.PlateNumber = dto.PlateNumber
-            ?.Trim()
+            .Trim()
             .Replace(" ", "")
             .Replace("-", "")
             .ToUpper();
@@ -165,7 +164,7 @@ public class VehicleService : IVehicleService
 
         if (vehicle == null)
         {
-            return ApiResponse<object>
+            return ApiResponse<VehicleResponseDto>
                 .Failure("Vehicle not found.");
         }
 
@@ -179,10 +178,8 @@ public class VehicleService : IVehicleService
 
         if (exists)
         {
-            return ApiResponse<object>
-                .Failure(
-                    "Vehicle plate number already exists."
-                );
+            return ApiResponse<VehicleResponseDto>
+                .Failure("Vehicle plate number already exists.");
         }
 
         _mapper.Map(dto, vehicle);
@@ -192,8 +189,14 @@ public class VehicleService : IVehicleService
 
         await _repository.UpdateAsync(vehicle);
 
-        return ApiResponse<object>
-            .Success("Vehicle updated successfully.");
+        var response =
+            _mapper.Map<VehicleResponseDto>(vehicle);
+
+        return ApiResponse<VehicleResponseDto>
+            .Success(
+                response,
+                "Vehicle updated successfully."
+            );
     }
     public async Task<ApiResponse<object>> DeleteAsync(
             long id,

@@ -8,9 +8,7 @@ public class VehicleValidator
 {
     public VehicleValidator()
     {
-        // ─────────────────────────────────────────
-        // Vehicle Name
-        // ─────────────────────────────────────────
+
         RuleFor(x => x.Name)
 
             .NotEmpty()
@@ -35,9 +33,7 @@ public class VehicleValidator
 
 
 
-        // ─────────────────────────────────────────
-        // Plate Number
-        // ─────────────────────────────────────────
+
         RuleFor(x => x.PlateNumber)
 
             .NotEmpty()
@@ -66,16 +62,12 @@ public class VehicleValidator
             );
 
 
-
-        // ─────────────────────────────────────────
-        // Capacity
-        // ─────────────────────────────────────────
         RuleFor(x => x.CapacityKg)
 
             .NotEmpty()
             .WithMessage("Capacity is required.")
 
-            .GreaterThan(0)
+            .GreaterThan(-1)
             .WithMessage(
                 "Capacity must be greater than 0."
             )
@@ -86,10 +78,6 @@ public class VehicleValidator
             );
 
 
-
-        // ─────────────────────────────────────────
-        // Availability
-        // ─────────────────────────────────────────
         RuleFor(x => x.IsAvailable)
 
             .NotNull()

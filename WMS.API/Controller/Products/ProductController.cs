@@ -1,12 +1,10 @@
-
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using WMS.Application.DTOs.Products;
 using WMS.Application.Interfaces;
-using WMS.Domain.Common;
-using WMS.Shared.Response;
 
 namespace WMS.API.Controllers;
 
@@ -24,11 +22,12 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
-    [FromQuery] int pageNumber = 1,
-    [FromQuery] int pageSize = 10,
-    [FromQuery] string? search = null,
-    [FromQuery] string? sortBy = null,
-    [FromQuery] bool ascending = true)
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] bool ascending = true
+    )
     {
         var result = await _service.GetAllAsync(
             pageNumber,
@@ -38,77 +37,87 @@ public class ProductController : ControllerBase
             ascending
         );
 
-        return Ok(
-            ApiResponse<PagedResult<ProductResponseDto>>
-                .Success(result, "Products fetched successfully.")
-        );
+        return Ok(result);
     }
-
 
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id)
     {
-        var product = await _service.GetByIdAsync(id);
-        if (product == null)
-        {
-            return NotFound(
-                ApiResponse<ProductResponseDto>
-                .Failure("Product not found.")
-            );
-        }
-        return Ok(ApiResponse<ProductResponseDto>.Success(product, "Product fetched successfully."));
-    }
+        var result = await _service.GetByIdAsync(id);
 
+        if (!result.IsSuccess)
+        {
+            return NotFound(result);
+        }
+
+        return Ok(result);
+    }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateProductDto dto)
+    public async Task<IActionResult> Create(
+        ProductRequestDto dto
+    )
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         if (!long.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
-        var product = await _service.CreateAsync(dto, userId);
 
-        return Ok(ApiResponse<ProductResponseDto>.Success(product, "Product created successfully."));
+        var result =
+            await _service.CreateAsync(dto, userId);
+
+        return Ok(result);
     }
-
-
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, UpdateProductDto dto)
+    public async Task<IActionResult> Update(
+        long id,
+        ProductRequestDto dto
+    )
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         if (!long.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
-        var updated = await _service.UpdateAsync(id, dto, userId);
 
-        if (!updated)
+        var result =
+            await _service.UpdateAsync(id, dto, userId);
+
+        if (!result.IsSuccess)
         {
-            return NotFound(ApiResponse<object>.Failure("Product not found."));
+            return NotFound(result);
         }
 
-        return Ok(ApiResponse<object>.Success("Product updated successfully."));
+        return Ok(result);
     }
 
-
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    public async Task<IActionResult> Delete(
+        long id
+    )
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         if (!long.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
-        var deleted = await _service.DeleteAsync(id, userId);
 
-        if (!deleted)
+        var result =
+            await _service.DeleteAsync(id, userId);
+
+        if (!result.IsSuccess)
         {
-            return NotFound(ApiResponse<object>.Failure("Product not found."));
+            return NotFound(result);
         }
 
-        return Ok(ApiResponse<object>.Success("Product deleted successfully."));
+        return Ok(result);
     }
 }
