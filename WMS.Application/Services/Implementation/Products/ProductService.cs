@@ -25,7 +25,6 @@ public class ProductService : IProductService
     {
         IQueryable<Product> query = _repository.Query();
 
-        // ── Search ─────────────────────────────
         if (!string.IsNullOrWhiteSpace(requestDto.Search))
         {
             requestDto.Search = requestDto.Search.Trim().ToLower();
@@ -39,7 +38,7 @@ public class ProductService : IProductService
             );
         }
 
-        // ── Sorting ────────────────────────────
+
         query = requestDto.SortBy?.ToLower() switch
         {
             "name" => requestDto.Ascending
@@ -57,16 +56,14 @@ public class ProductService : IProductService
             _ => query.OrderByDescending(x => x.CreatedAt),
         };
 
-        // ── Total Count ────────────────────────
+   
         var totalCount = await query.CountAsync();
 
-        // ── Pagination ─────────────────────────
         var products = await query
             .Skip((requestDto.PageNumber - 1) * requestDto.PageSize)
             .Take(requestDto.PageSize)
             .ToListAsync();
 
-        // ── Mapping ────────────────────────────
         var productDtos =
             _mapper.Map<List<ProductResponseDto>>(products);
 
@@ -124,6 +121,7 @@ public class ProductService : IProductService
 
     public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(long id,ProductRequestDto dto,long userId)
     {
+       
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
@@ -150,10 +148,7 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<object>> DeleteAsync(
-        long id,
-        long userId
-    )
+    public async Task<ApiResponse<object>> DeleteAsync(long id, long userId)
     {
         var product = await _repository.GetByIdAsync(id);
 

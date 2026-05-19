@@ -25,7 +25,7 @@ public class CityController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-  
+
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id)
     {
@@ -38,8 +38,8 @@ public class CityController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-            var userIdClaim =
-            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim =
+        User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
         {
@@ -50,10 +50,10 @@ public class CityController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-   
+
     [HttpPut("{id:long}")]
     public async Task<IActionResult> Update(long id, [FromBody] CityRequestDTO dto)
-    {   
+    {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -63,7 +63,7 @@ public class CityController : ControllerBase
         }
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-            
+
 
         var result = await _cityService.UpdateAsync(id, dto, userId);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
@@ -71,7 +71,8 @@ public class CityController : ControllerBase
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
-    {   var userIdClaim =
+    {
+        var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
