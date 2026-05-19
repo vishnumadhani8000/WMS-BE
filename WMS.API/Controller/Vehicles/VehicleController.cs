@@ -1,9 +1,11 @@
+using System.Security.AccessControl;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using WMS.Application.DTOs.Vehicles;
 using WMS.Application.Interfaces;
+using WMS.Domain.Common;
 
 namespace WMS.API.Controllers;
 
@@ -20,21 +22,9 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery] string? search = null,
-        [FromQuery] string? sortBy = null,
-        [FromQuery] bool ascending = true
-    )
+    public async Task<IActionResult> GetAll([FromQuery] CommonFilterDto filterDto )
     {
-        var result = await _service.GetAllAsync(
-            pageNumber,
-            pageSize,
-            search,
-            sortBy,
-            ascending
-        );
+        var result = await _service.GetAllAsync(filterDto);
 
         return result.IsSuccess
             ? Ok(result)
@@ -52,9 +42,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(
-        VehicleRequestDto dto
-    )
+    public async Task<IActionResult> Create(VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -75,10 +63,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(
-        long id,
-        VehicleRequestDto dto
-    )
+    public async Task<IActionResult> Update( long id, VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -102,8 +87,7 @@ public class VehicleController : ControllerBase
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
     {
-        var userIdClaim =
-            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
         {

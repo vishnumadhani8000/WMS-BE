@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login( [FromBody] LoginRequestDto request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
         var result = await _authService.LoginAsync(request);
 
@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
                 ApiResponse<string>.Failure("No refresh token found"));
         }
 
-        var result = await _authService.RefreshTokenAsync( 
+        var result = await _authService.RefreshTokenAsync(
             new RefreshTokenRequestDto
             {
                 RefreshToken = rawToken

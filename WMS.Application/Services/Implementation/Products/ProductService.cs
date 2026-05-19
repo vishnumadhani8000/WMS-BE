@@ -1,16 +1,12 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-
 using WMS.Application.DTOs.Products;
 using WMS.Application.Interfaces;
-
 using WMS.Domain.Common;
 using WMS.Domain.Entities;
-
 using WMS.Shared.Response;
 
 namespace WMS.Application.Services;
-
 public class ProductService : IProductService
 {
     private readonly ICommonRepository<Product> _repository;
@@ -25,58 +21,49 @@ public class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllAsync(
-        int pageNumber,
-        int pageSize,
-        string? search,
-        string? sortBy,
-        bool ascending
-    )
+    public async Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllAsync(CommonFilterDto requestDto)
     {
         IQueryable<Product> query = _repository.Query();
 
-        // ── Search ─────────────────────────────
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(requestDto.Search))
         {
-            search = search.Trim().ToLower();
+            requestDto.Search = requestDto.Search.Trim().ToLower();
 
             query = query.Where(x =>
-                x.Name.ToLower().Contains(search) ||
+                x.Name.ToLower().Contains(requestDto.Search) ||
                 (
                     x.Description != null &&
-                    x.Description.ToLower().Contains(search)
+                    x.Description.ToLower().Contains(requestDto.Search)
                 )
             );
         }
 
-        // ── Sorting ────────────────────────────
-        query = sortBy?.ToLower() switch
+
+        query = requestDto.SortBy?.ToLower() switch
         {
-            "name" => ascending
+            "name" => requestDto.Ascending
                 ? query.OrderBy(x => x.Name)
                 : query.OrderByDescending(x => x.Name),
 
-            "weight" => ascending
+            "weight" => requestDto.Ascending
                 ? query.OrderBy(x => x.WeightKg)
                 : query.OrderByDescending(x => x.WeightKg),
 
-            "stock" => ascending
+            "stock" => requestDto.Ascending
                 ? query.OrderBy(x => x.Stock)
                 : query.OrderByDescending(x => x.Stock),
 
             _ => query.OrderByDescending(x => x.CreatedAt),
         };
 
-        // ── Total Count ────────────────────────
+   
         var totalCount = await query.CountAsync();
 
-        // ── Pagination ─────────────────────────
         var products = await query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((requestDto.PageNumber - 1) * requestDto.PageSize)
+            .Take(requestDto.PageSize)
             .ToListAsync();
 
-        // ── Mapping ────────────────────────────
         var productDtos =
             _mapper.Map<List<ProductResponseDto>>(products);
 
@@ -84,8 +71,8 @@ public class ProductService : IProductService
         {
             Items = productDtos,
             TotalCount = totalCount,
-            PageNumber = pageNumber,
-            PageSize = pageSize,
+            PageNumber = requestDto.PageNumber,
+            PageSize = requestDto.PageSize,
         };
 
         return ApiResponse<PagedResult<ProductResponseDto>>
@@ -95,12 +82,9 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> GetByIdAsync(
-        long id
-    )
+    public async Task<ApiResponse<ProductResponseDto>> GetByIdAsync(long id)
     {
         var product = await _repository.GetByIdAsync(id);
-
         if (product == null)
         {
             return ApiResponse<ProductResponseDto>
@@ -117,10 +101,7 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> CreateAsync(
-        ProductRequestDto dto,
-        long userId
-    )
+    public async Task<ApiResponse<ProductResponseDto>> CreateAsync(ProductRequestDto dto,long userId )
     {
         var product = _mapper.Map<Product>(dto);
 
@@ -138,12 +119,9 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(
-        long id,
-        ProductRequestDto dto,
-        long userId
-    )
+    public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(long id,ProductRequestDto dto,long userId)
     {
+       
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
@@ -170,10 +148,7 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<object>> DeleteAsync(
-        long id,
-        long userId
-    )
+    public async Task<ApiResponse<object>> DeleteAsync(long id, long userId)
     {
         var product = await _repository.GetByIdAsync(id);
 

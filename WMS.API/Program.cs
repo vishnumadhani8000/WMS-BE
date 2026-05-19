@@ -90,8 +90,14 @@ builder.Services.AddScoped<IProductService, ProductService>();
 //--AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
-//---Vehicle-MAnagement
+//---Vehicle-Management
 builder.Services.AddScoped<IVehicleService,VehicleService>();
+
+//--State-Management
+builder.Services.AddScoped<IStateService, StateService>();
+
+//--City-Management
+builder.Services.AddScoped<ICityService, CityService>();
 
 
 builder.Services.AddControllers();

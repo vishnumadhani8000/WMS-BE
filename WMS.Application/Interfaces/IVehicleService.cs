@@ -6,13 +6,7 @@ namespace WMS.Application.Interfaces;
 
 public interface IVehicleService
 {
-    Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(
-        int pageNumber,
-        int pageSize,
-        string? search,
-        string? sortBy,
-        bool ascending
-    );
+    Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(CommonFilterDto requestDto);
 
     Task<ApiResponse<VehicleResponseDto>> GetByIdAsync(long id);
 
