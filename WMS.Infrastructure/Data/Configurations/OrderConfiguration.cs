@@ -14,7 +14,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(x => x.Id).UseIdentityColumn();
 
         builder.Property(x => x.Status)        .IsRequired().HasConversion<string>();
-        builder.Property(x => x.TotalWeightKg) .IsRequired().HasColumnType("decimal(12,3)");
+        builder.Property(x => x.TotalWeightKg)    .IsRequired().HasColumnType("decimal(10,3)");
         builder.Property(x => x.Notes)         .IsRequired(false);
         builder.Property(x => x.ShipmentId)    .IsRequired(false);
         builder.Property(x => x.CreatedAt)     .IsRequired().HasDefaultValueSql("now()");
@@ -22,6 +22,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(x => x.CreatedBy)     .IsRequired(false);
         builder.Property(x => x.UpdatedBy)     .IsRequired(false);
         builder.Property(x => x.DeletedBy)     .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
         builder.HasIndex(x => x.UserId)     .HasDatabaseName("orders_user_id_idx");
         builder.HasIndex(x => x.AddressId)  .HasDatabaseName("orders_address_id_idx");
@@ -36,6 +37,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+       builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

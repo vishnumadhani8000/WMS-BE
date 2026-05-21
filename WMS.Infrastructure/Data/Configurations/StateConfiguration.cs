@@ -17,16 +17,17 @@ public class StateConfiguration : IEntityTypeConfiguration<State>
         builder.Property(x => x.CreatedAt) .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt) .IsRequired(false);
         builder.Property(x => x.CreatedBy) .IsRequired(false);
+         builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
         builder.Property(x => x.UpdatedBy) .IsRequired(false);
         builder.Property(x => x.DeletedBy) .IsRequired(false);
 
-        builder.HasIndex(x => x.Name)      .IsUnique().HasDatabaseName("states_name_uidx");
+        builder.HasIndex(x => x.Name).IsUnique().HasFilter("\"IsDeleted\" = false").HasDatabaseName("states_name_uidx");
         builder.HasIndex(x => x.DeletedAt) .HasDatabaseName("states_deleted_at_idx");
 
         builder.HasOne(x => x.CreatedByUser).WithMany().HasForeignKey(x => x.CreatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

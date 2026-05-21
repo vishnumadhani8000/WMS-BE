@@ -19,8 +19,9 @@ public class CityConfiguration : IEntityTypeConfiguration<City>
         builder.Property(x => x.CreatedBy) .IsRequired(false);
         builder.Property(x => x.UpdatedBy) .IsRequired(false);
         builder.Property(x => x.DeletedBy) .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
-        builder.HasIndex(x => new { x.StateId, x.Name }).IsUnique().HasDatabaseName("cities_state_name_uidx");
+        builder.HasIndex(x => new { x.StateId, x.Name }).IsUnique().HasFilter("\"IsDeleted\" = false").HasDatabaseName("cities_state_name_uidx");
         builder.HasIndex(x => x.DeletedAt).HasDatabaseName("cities_deleted_at_idx");
 
         builder.HasOne(x => x.State).WithMany(s => s.Cities).HasForeignKey(x => x.StateId).OnDelete(DeleteBehavior.Restrict);
@@ -28,6 +29,6 @@ public class CityConfiguration : IEntityTypeConfiguration<City>
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

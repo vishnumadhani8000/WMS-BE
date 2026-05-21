@@ -3,7 +3,7 @@ using WMS.Domain.Entities;
 
 namespace WMS.Domain.Entities;
 
-public class City : AuditableEntity
+public class City : BaseEntity
 {
     public long StateId { get; set; }
     public string Name { get; set; } = string.Empty;

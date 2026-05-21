@@ -20,6 +20,8 @@ public class WmsDbContext : DbContext
     public DbSet<Vehicle>     Vehicles     => Set<Vehicle>();
     public DbSet<Shipment>    Shipments    => Set<Shipment>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Cart> carts => Set<Cart>();
+     public DbSet<CartItem> cartItems => Set<CartItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,7 +61,9 @@ private void SetAuditFields()
         {
             entry.State = EntityState.Modified;
 
+            entry.Entity.IsDeleted = true;
             entry.Entity.DeletedAt = DateTime.UtcNow;
         }
     }
-}}
+}
+}

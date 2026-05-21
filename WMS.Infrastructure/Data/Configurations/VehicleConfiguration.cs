@@ -22,6 +22,7 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(x => x.CreatedBy)   .IsRequired(false);
         builder.Property(x => x.UpdatedBy)   .IsRequired(false);
         builder.Property(x => x.DeletedBy)   .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
         builder.HasIndex(x => x.PlateNumber).IsUnique().HasDatabaseName("vehicles_plate_uidx");
         builder.HasIndex(x => x.IsAvailable).HasDatabaseName("vehicles_available_idx");
@@ -31,6 +32,6 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

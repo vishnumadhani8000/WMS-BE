@@ -22,6 +22,7 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
         builder.Property(x => x.CreatedBy)   .IsRequired(false);
         builder.Property(x => x.UpdatedBy)   .IsRequired(false);
         builder.Property(x => x.DeletedBy)   .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
         builder.HasIndex(x => x.IsAvailable).HasDatabaseName("drivers_available_idx");
         builder.HasIndex(x => x.DeletedAt)  .HasDatabaseName("drivers_deleted_at_idx");
@@ -30,6 +31,6 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }
