@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using WMS.Application.DTOs.Products;
 using WMS.Domain.Common;
 using WMS.Shared.Response;
@@ -9,6 +10,8 @@ public interface IProductService
     Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllAsync(CommonFilterDto requestDto);
 
     Task<ApiResponse<ProductResponseDto>> GetByIdAsync(long id );
+    Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto);
+
 
     Task<ApiResponse<ProductResponseDto>> CreateAsync( ProductRequestDto dto,long createdByUser);
 

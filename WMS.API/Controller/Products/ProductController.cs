@@ -54,7 +54,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id,ProductRequestDto dto)
+    public async Task<IActionResult> Update(long id, ProductRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -64,7 +64,7 @@ public class ProductController : ControllerBase
             return Unauthorized();
         }
         var result =
-            await _service.UpdateAsync(id,dto, userId);
+            await _service.UpdateAsync(id, dto, userId);
 
         if (!result.IsSuccess)
         {
@@ -77,17 +77,25 @@ public class ProductController : ControllerBase
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
     {
-        var userIdClaim =  User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!long.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
 
-        var result =await _service.DeleteAsync(id, userId);
+        var result = await _service.DeleteAsync(id, userId);
         if (!result.IsSuccess)
         {
             return NotFound(result);
         }
+
+        return Ok(result);
+    }
+    [HttpGet("customer")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllForCustomer([FromQuery] CommonFilterDto filterDto)
+    {
+        var result = await _service.GetAllForCustomerAsync(filterDto);
 
         return Ok(result);
     }

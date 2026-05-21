@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using WMS.Application;
 using WMS.Domain.Common;
@@ -68,5 +69,16 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
     public IQueryable<T> Query()
     {
         return _dbSet.AsQueryable();
+    }
+
+    public async Task<int> SoftDeleteMultipleAsync(Expression<Func<T, bool>> predicate, long deletedBy, CancellationToken ct = default)
+    {
+        var utcNow = DateTime.UtcNow;
+
+        return await _dbSet
+            .Where(predicate)
+            .ExecuteUpdateAsync(setters => setters
+              .SetProperty(x => x.DeletedAt, x => DateTime.UtcNow)
+              , ct);
     }
 }

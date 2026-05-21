@@ -17,7 +17,7 @@ public interface IVehicleService
 
     Task<ApiResponse<VehicleResponseDto>> UpdateAsync(
         long id,
-        VehicleRequestDto dto,
+        VehicleRequestDto dto,  
         long userId
     );
 
