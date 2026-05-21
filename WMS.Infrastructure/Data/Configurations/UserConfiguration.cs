@@ -21,12 +21,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.IsActive)     .IsRequired().HasDefaultValue(true);
         builder.Property(x => x.CreatedAt)    .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)    .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
         builder.HasIndex(x => x.Email)     .IsUnique().HasDatabaseName("users_email_uidx");
         builder.HasIndex(x => x.Role)      .HasDatabaseName("users_role_idx");
         builder.HasIndex(x => x.DeletedAt) .HasDatabaseName("users_deleted_at_idx");
 
-        // Soft delete global query filter
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+       builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

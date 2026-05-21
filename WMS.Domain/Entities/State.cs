@@ -2,7 +2,7 @@ using WMS.Domain.Common;
 
 namespace WMS.Domain.Entities;
 
-public class State : AuditableEntity
+public class State : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
 

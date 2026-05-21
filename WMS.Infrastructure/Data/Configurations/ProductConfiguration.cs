@@ -22,6 +22,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.CreatedBy)   .IsRequired(false);
         builder.Property(x => x.UpdatedBy)   .IsRequired(false);
         builder.Property(x => x.DeletedBy)   .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
         builder.HasIndex(x => x.Name)      .HasDatabaseName("products_name_idx");
         builder.HasIndex(x => x.DeletedAt) .HasDatabaseName("products_deleted_at_idx");
@@ -30,6 +31,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

@@ -23,6 +23,7 @@ public class ShipmentConfiguration : IEntityTypeConfiguration<Shipment>
         builder.Property(x => x.CreatedBy)     .IsRequired(false);
         builder.Property(x => x.UpdatedBy)     .IsRequired(false);
         builder.Property(x => x.DeletedBy)     .IsRequired(false);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
 
         builder.HasIndex(x => x.DriverId)  .HasDatabaseName("shipments_driver_id_idx");
         builder.HasIndex(x => x.VehicleId) .HasDatabaseName("shipments_vehicle_id_idx");
@@ -35,6 +36,6 @@ public class ShipmentConfiguration : IEntityTypeConfiguration<Shipment>
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(x => x.DeletedAt == null);
+        builder.HasQueryFilter(x => !x.IsDeleted);
     }
 }

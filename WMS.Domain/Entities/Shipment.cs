@@ -3,7 +3,7 @@ using WMS.Domain.Enums;
 
 namespace WMS.Domain.Entities;
 
-public class Shipment : AuditableEntity
+public class Shipment : BaseEntity
 {
     public long DriverId { get; set; }
     public long VehicleId { get; set; }
