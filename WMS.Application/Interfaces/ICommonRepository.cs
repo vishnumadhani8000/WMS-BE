@@ -16,5 +16,6 @@ public interface ICommonRepository<T> where T : class
     Task SoftDeleteAsync(T entity, CancellationToken ct = default);
     Task<IEnumerable<T>> GetPagedAsync(Expression<Func<T, bool>> predicate, int pageNumber, int pageSize, CancellationToken ct = default);
     Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default);
+    Task<int> SoftDeleteMultipleAsync(Expression<Func<T, bool>> predicate,long deletedBy,CancellationToken ct = default);
     IQueryable<T> Query();
 }

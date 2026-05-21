@@ -56,7 +56,7 @@ public class ProductService : IProductService
             _ => query.OrderByDescending(x => x.CreatedAt),
         };
 
-   
+
         var totalCount = await query.CountAsync();
 
         var products = await query
@@ -101,7 +101,7 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> CreateAsync(ProductRequestDto dto,long userId )
+    public async Task<ApiResponse<ProductResponseDto>> CreateAsync(ProductRequestDto dto, long userId)
     {
         var product = _mapper.Map<Product>(dto);
 
@@ -119,9 +119,9 @@ public class ProductService : IProductService
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(long id,ProductRequestDto dto,long userId)
+    public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(long id, ProductRequestDto dto, long userId)
     {
-       
+
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
@@ -165,5 +165,68 @@ public class ProductService : IProductService
 
         return ApiResponse<object>
             .Success("Product deleted successfully.");
+    }
+
+    public async Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto)
+    {
+        IQueryable<Product> query = _repository.Query();
+
+        query = query.Where(x=>x.Stock>0);
+
+        if (!string.IsNullOrWhiteSpace(requestDto.Search))
+        {
+            requestDto.Search = requestDto.Search.Trim().ToLower();
+
+            query = query.Where(x =>
+                x.Name.ToLower().Contains(requestDto.Search) ||
+                (
+                    x.Description != null &&
+                    x.Description.ToLower().Contains(requestDto.Search)
+                )
+            );
+        }
+
+
+        query = requestDto.SortBy?.ToLower() switch
+        {
+            "name" => requestDto.Ascending
+                ? query.OrderBy(x => x.Name)
+                : query.OrderByDescending(x => x.Name),
+
+            "weight" => requestDto.Ascending
+                ? query.OrderBy(x => x.WeightKg)
+                : query.OrderByDescending(x => x.WeightKg),
+
+            "stock" => requestDto.Ascending
+                ? query.OrderBy(x => x.Stock)
+                : query.OrderByDescending(x => x.Stock),
+
+            _ => query.OrderByDescending(x => x.CreatedAt),
+        };
+
+
+        var totalCount = await query.CountAsync();
+
+        var products = await query
+            .Skip((requestDto.PageNumber - 1) * requestDto.PageSize)
+            .Take(requestDto.PageSize)
+            .ToListAsync();
+
+        var productDtos =
+            _mapper.Map<List<ProductResponseDto>>(products);
+
+        var result = new PagedResult<ProductResponseDto>
+        {
+            Items = productDtos,
+            TotalCount = totalCount,
+            PageNumber = requestDto.PageNumber,
+            PageSize = requestDto.PageSize,
+        };
+
+        return ApiResponse<PagedResult<ProductResponseDto>>
+            .Success(
+                result,
+                "Products fetched successfully."
+            );
     }
 }

@@ -11,14 +11,17 @@ namespace WMS.Application.Services;
 public class StateService : IStateService
 {
     private readonly ICommonRepository<State> _repository;
+    private readonly ICommonRepository<City>_cityrepository;
     private readonly IMapper _mapper;
 
     public StateService(
         ICommonRepository<State> repository,
-        IMapper mapper)
+        IMapper mapper,
+        ICommonRepository<City> cityrepository)
     {
         _repository = repository;
         _mapper = mapper;
+        _cityrepository = cityrepository;
     }
 
     public async Task<ApiResponse<PagedResult<StateResponseDTO>>> GetAllAsync(CommonFilterDto requestDTO)
@@ -29,7 +32,6 @@ public class StateService : IStateService
         if (!string.IsNullOrWhiteSpace(requestDTO.Search))
         {
             requestDTO.Search = requestDTO.Search.Trim().ToLower();
-
             query = query.Where(x =>
                 x.Name.ToLower().Contains(requestDTO.Search)
             );
@@ -147,6 +149,9 @@ public class StateService : IStateService
         if (state == null)
             return ApiResponse<bool>
                 .Failure("State not found.");
+
+
+           await _cityrepository.SoftDeleteMultipleAsync(x => x.StateId == id,deletedBy);
 
         state.DeletedBy = deletedBy;
         state.DeletedAt = DateTime.UtcNow;
