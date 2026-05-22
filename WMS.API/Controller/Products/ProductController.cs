@@ -39,7 +39,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ProductRequestDto dto)
+    public async Task<IActionResult> Create(BaseProductDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!long.TryParse(userIdClaim, out var userId))
@@ -54,7 +54,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, ProductRequestDto dto)
+    public async Task<IActionResult> Update(BaseProductDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -64,7 +64,7 @@ public class ProductController : ControllerBase
             return Unauthorized();
         }
         var result =
-            await _service.UpdateAsync(id, dto, userId);
+            await _service.UpdateAsync(dto, userId);
 
         if (!result.IsSuccess)
         {

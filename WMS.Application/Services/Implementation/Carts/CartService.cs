@@ -191,8 +191,7 @@ public class CartService : ICartService
             .Success("Cart item deleted successfully.");
     }
 
-    public async Task<ApiResponse<CartResponseDto>> GetCartAsync(
-        long userId)
+    public async Task<ApiResponse<CartResponseDto>> GetCartAsync(long userId)
     {
         var cart = await _cartRepository
             .Query()

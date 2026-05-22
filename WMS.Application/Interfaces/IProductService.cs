@@ -7,15 +7,15 @@ namespace WMS.Application.Interfaces;
 
 public interface IProductService
 {
-    Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllAsync(CommonFilterDto requestDto);
+    Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllAsync(CommonFilterDto requestDto);
 
-    Task<ApiResponse<ProductResponseDto>> GetByIdAsync(long id );
-    Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto);
+    Task<ApiResponse<BaseProductDto>> GetByIdAsync(long id );
+    Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto);
 
 
-    Task<ApiResponse<ProductResponseDto>> CreateAsync( ProductRequestDto dto,long createdByUser);
+    Task<ApiResponse<BaseProductDto>> CreateAsync( BaseProductDto dto,long createdByUser);
 
-    Task<ApiResponse<ProductResponseDto>> UpdateAsync(long id ,ProductRequestDto dto,long updatedByUser);
+    Task<ApiResponse<BaseProductDto>> UpdateAsync(BaseProductDto dto,long updatedByUser);
 
     Task<ApiResponse<object>> DeleteAsync(long id,long deletedByUser);
 }
