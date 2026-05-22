@@ -4,8 +4,7 @@ public enum OrderStatus
 {
     Pending,
     Accepted,
-    Packed,
-    Assigned,
+    Dispatched,
     InTransit,
     Delivered,
     Cancelled

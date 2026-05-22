@@ -48,8 +48,8 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
 
     public async Task SoftDeleteAsync(T entity, CancellationToken ct = default)
     {
-        entity.DeletedAt = DateTime.UtcNow;
-        _dbSet.Update(entity);
+
+        _dbSet.Remove(entity);
         await _context.SaveChangesAsync(ct);
     }
 
@@ -71,14 +71,37 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
         return _dbSet.AsQueryable();
     }
 
-    public async Task<int> SoftDeleteMultipleAsync(Expression<Func<T, bool>> predicate, long deletedBy, CancellationToken ct = default)
+    public async Task<int> SoftDeleteMultipleAsync(
+       Expression<Func<T, bool>> predicate,
+       long deletedBy,
+       CancellationToken ct = default)
     {
         var utcNow = DateTime.UtcNow;
 
         return await _dbSet
             .Where(predicate)
             .ExecuteUpdateAsync(setters => setters
-              .SetProperty(x => x.DeletedAt, x => DateTime.UtcNow)
-              , ct);
+                .SetProperty(x => x.IsDeleted, true)
+                .SetProperty(x => x.DeletedAt, utcNow)
+                .SetProperty(x => x.DeletedBy, deletedBy),
+                ct);
+    }
+    public async Task<IEnumerable<T>> AddRangeAsync(
+        IEnumerable<T> entities,
+        CancellationToken ct = default)
+    {
+        await _dbSet.AddRangeAsync(entities, ct);
+
+        await _context.SaveChangesAsync(ct);
+
+        return entities;
+    }
+    public async Task UpdateRangeAsync(
+        IEnumerable<T> entities,
+        CancellationToken ct = default)
+    {
+        _dbSet.UpdateRange(entities);
+
+        await _context.SaveChangesAsync(ct);
     }
 }
