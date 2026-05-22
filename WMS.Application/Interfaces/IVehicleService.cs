@@ -7,9 +7,7 @@ namespace WMS.Application.Interfaces;
 public interface IVehicleService
 {
     Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(CommonFilterDto requestDto);
-
     Task<ApiResponse<VehicleResponseDto>> GetByIdAsync(long id);
-
     Task<ApiResponse<VehicleResponseDto>> CreateAsync(
         VehicleRequestDto dto,
         long userId

@@ -16,7 +16,6 @@ using WMS.Infrastructure.Data;
 using WMS.Infrastructure.Data.Seeders;
 using WMS.Infrastructure.Repositories;
 using WMS.Infrastructure.Services;
-using WMS.Application.Common.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +97,9 @@ builder.Services.AddScoped<IStateService, StateService>();
 
 //--City-Management
 builder.Services.AddScoped<ICityService, CityService>();
+
+//--Cart-Management
+builder.Services.AddScoped<ICartService,CartService>();
 
 
 builder.Services.AddControllers();

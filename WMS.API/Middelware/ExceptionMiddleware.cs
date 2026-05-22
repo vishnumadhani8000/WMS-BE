@@ -9,7 +9,6 @@ public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
-
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;
@@ -36,7 +35,6 @@ public class ExceptionMiddleware
         if (ex is ValidationException validationEx)
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
             var errors = validationEx.Errors
                 .Select(e => e.ErrorMessage)
                 .ToList();

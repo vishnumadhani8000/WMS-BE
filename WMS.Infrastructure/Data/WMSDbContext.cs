@@ -43,26 +43,28 @@ public class WmsDbContext : DbContext
 
 private void SetAuditFields()
 {
+    var utcNow = DateTime.UtcNow;
+
     var entries = ChangeTracker.Entries<BaseEntity>();
 
     foreach (var entry in entries)
     {
-        if (entry.State == EntityState.Added)
+        switch (entry.State)
         {
-            entry.Entity.CreatedAt = DateTime.UtcNow;
-        }
+            case EntityState.Added:
+                entry.Entity.CreatedAt = utcNow;
+                break;
 
-        if (entry.State == EntityState.Modified)
-        {
-            entry.Entity.UpdatedAt = DateTime.UtcNow;
-        }
+            case EntityState.Modified:
+                entry.Entity.UpdatedAt = utcNow;
+                break;
 
-        if (entry.State == EntityState.Deleted)
-        {
-            entry.State = EntityState.Modified;
+            case EntityState.Deleted:
+                entry.State = EntityState.Modified; 
 
-            entry.Entity.IsDeleted = true;
-            entry.Entity.DeletedAt = DateTime.UtcNow;
+                entry.Entity.IsDeleted = true;
+                entry.Entity.DeletedAt = utcNow;
+                break;
         }
     }
 }

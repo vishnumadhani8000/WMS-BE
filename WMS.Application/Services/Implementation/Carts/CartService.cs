@@ -1,0 +1,295 @@
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using WMS.Application.DTOs.Carts;
+using WMS.Application.Interfaces;
+using WMS.Domain.Entities;
+using WMS.Shared.Response;
+
+namespace WMS.Application.Services;
+
+public class CartService : ICartService
+{
+    private readonly ICommonRepository<Cart> _cartRepository;
+    private readonly ICommonRepository<CartItem> _cartItemRepository;
+    private readonly ICommonRepository<Product> _productRepository;
+    private readonly IMapper _mapper;
+
+    public CartService(
+        ICommonRepository<Cart> cartRepository,
+        ICommonRepository<CartItem> cartItemRepository,
+        ICommonRepository<Product> productRepository,
+        IMapper mapper)
+    {
+        _cartRepository = cartRepository;
+        _cartItemRepository = cartItemRepository;
+        _productRepository = productRepository;
+        _mapper = mapper;
+    }
+
+    // ADD TO CART
+    public async Task<ApiResponse<string>> AddToCartAsync(
+        AddToCartDto dto,
+        long createdBy)
+    {
+        if (dto.Quantity <= 0)
+        {
+            return ApiResponse<string>
+                .Failure("Quantity must be greater than 0.");
+        }
+
+        var product = await _productRepository
+            .Query()
+            .FirstOrDefaultAsync(
+                x => x.Id == dto.ProductId);
+
+        if (product == null)
+        {
+            return ApiResponse<string>
+                .Failure("Product not found.");
+        }
+        var cart = await _cartRepository
+            .Query()
+            .FirstOrDefaultAsync(
+                x => x.UserId == createdBy);
+
+        if (cart == null)
+        {
+            cart = new Cart
+            {
+                UserId = createdBy,
+                CreatedBy = createdBy,
+                TotalWeightKg = 0
+            };
+
+            await _cartRepository
+                .AddAsync(cart);
+        }
+        var existingCartItem = await _cartItemRepository
+            .Query()
+            .Include(x => x.Product)
+            .FirstOrDefaultAsync(
+                x => x.CartId == cart.Id &&
+                    x.ProductId == dto.ProductId);
+
+
+        if (existingCartItem != null)
+        {
+            var newQuantity =
+                existingCartItem.Quantity + dto.Quantity;
+
+            if (newQuantity > product.Stock)
+            {
+                return ApiResponse<string>
+                    .Failure(
+                       "All available stock is already added to your cart.");
+            }
+
+            existingCartItem.Quantity = newQuantity;
+            existingCartItem.UpdatedBy = createdBy;
+            existingCartItem.UpdatedAt = DateTime.UtcNow;
+
+            await _cartItemRepository
+                .UpdateAsync(existingCartItem);
+        }
+      
+        else
+        {
+            if (dto.Quantity > product.Stock)
+            {
+                return ApiResponse<string>
+                        .Failure(  $"Only {product.Stock} quantity available.");
+            }
+
+            var cartItem = new CartItem
+            {
+                CartId = cart.Id,
+                ProductId = dto.ProductId,
+                Quantity = dto.Quantity,
+                WeightKg = product.WeightKg,
+                CreatedBy = createdBy
+            };
+
+            await _cartItemRepository
+                .AddAsync(cartItem);
+        }
+
+        await UpdateCartWeightAsync(cart.Id);
+
+        return ApiResponse<string>
+            .Success("Product added to cart.");
+    }
+
+    public async Task<ApiResponse<object>> UpdateQuantityAsync(
+        long cartItemId,
+        UpdateCartItemQuantityDto dto,
+        long updatedBy)
+    {
+        if (dto.Quantity <= 0)
+        {
+            return ApiResponse<object>
+                .Failure("Quantity must be greater than 0.");
+        }
+
+        var cartItem = await _cartItemRepository
+            .Query()
+            .Include(x => x.Product)
+            .FirstOrDefaultAsync(
+                x => x.Id == cartItemId);
+
+        if (cartItem == null)
+        {
+            return ApiResponse<object>
+                .Failure("Cart item not found.");
+        }
+
+        if (dto.Quantity > cartItem.Product.Stock)
+        {
+            return ApiResponse<object>
+                .Failure($"Only {cartItem.Product.Stock} quantity available.");
+        }
+
+        cartItem.Quantity = dto.Quantity;
+        cartItem.UpdatedBy = updatedBy;
+        cartItem.UpdatedAt = DateTime.UtcNow;
+
+        await _cartItemRepository
+            .UpdateAsync(cartItem);
+
+        await UpdateCartWeightAsync(cartItem.CartId);
+
+        return ApiResponse<object>
+            .Success("Cart item updated successfully.");
+    }
+
+
+    public async Task<ApiResponse<object>> DeleteCartItemAsync(
+        long cartItemId,
+        long deletedBy)
+    {
+        var cartItem = await _cartItemRepository
+            .Query()
+            .FirstOrDefaultAsync(
+                x => x.Id == cartItemId &&
+                    x.DeletedAt == null);
+
+        if (cartItem == null)
+        {
+            return ApiResponse<object>
+                .Failure("Cart item not found.");
+        }
+
+        var cartId = cartItem.CartId;
+
+        cartItem.DeletedBy = deletedBy;
+
+        await _cartItemRepository
+            .SoftDeleteAsync(cartItem);
+
+        await UpdateCartWeightAsync(cartId);
+
+        return ApiResponse<object>
+            .Success("Cart item deleted successfully.");
+    }
+
+    public async Task<ApiResponse<CartResponseDto>> GetCartAsync(
+        long userId)
+    {
+        var cart = await _cartRepository
+            .Query()
+            .Include(x => x.CartItems)
+            .ThenInclude(x => x.Product)
+            .FirstOrDefaultAsync(
+                x => x.UserId == userId);
+
+        if (cart == null)
+        {
+            return ApiResponse<CartResponseDto>
+                .Empty("Cart not found.");
+        }
+
+        bool updated = false;
+
+
+        foreach (var item in cart.CartItems.ToList())
+        {
+
+            if (item.Product == null)
+            {
+                item.DeletedAt = DateTime.UtcNow;
+                await _cartItemRepository
+                    .SoftDeleteAsync(item);
+
+                updated = true;
+
+                continue;
+            }
+
+
+            if (item.Product.Stock <= 0)
+            {
+                item.DeletedAt = DateTime.UtcNow;
+                await _cartItemRepository
+                    .SoftDeleteAsync(item);
+                updated = true;
+                continue;
+            }
+
+
+            if (item.Quantity > item.Product.Stock)
+            {
+                item.Quantity = item.Product.Stock;
+                item.UpdatedAt = DateTime.UtcNow;
+
+                await _cartItemRepository
+                    .UpdateAsync(item);
+
+                updated = true;
+            }
+        }
+
+        if (updated)
+        {
+            await UpdateCartWeightAsync(cart.Id);
+            cart = await _cartRepository
+                .Query()
+                .Include(x => x.CartItems
+                    .Where(ci => ci.DeletedAt == null))
+                .ThenInclude(x => x.Product)
+                .FirstAsync(
+                    x => x.Id == cart.Id);
+        }
+
+        var response = _mapper.Map<CartResponseDto>(cart);
+
+
+        return ApiResponse<CartResponseDto>
+            .Success(response);
+    }
+
+    // PRIVATE METHOD
+    private async Task UpdateCartWeightAsync(
+        long cartId)
+    {
+        var cartItems = await _cartItemRepository
+            .Query()
+            .Include(x => x.Product)
+            .Where(x =>
+                x.CartId == cartId &&
+                x.DeletedAt == null)
+            .ToListAsync();
+
+        var totalWeight = cartItems.Sum(x =>
+            x.Product.WeightKg * x.Quantity);
+
+        var cart = await _cartRepository
+            .Query()
+            .FirstAsync(
+                x => x.Id == cartId);
+
+        cart.TotalWeightKg = totalWeight;
+        cart.UpdatedAt = DateTime.UtcNow;
+
+        await _cartRepository
+            .UpdateAsync(cart);
+    }
+}
