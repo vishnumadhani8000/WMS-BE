@@ -7,6 +7,7 @@
         public string Name { get; set; } = string.Empty;
         public decimal WeightKg { get; set; }
         public int Stock { get; set; } = 0;
+        public decimal Price {get;set;}
         public string? Description { get; set; }
         public User? CreatedByUser { get; set; }
         public User? UpdatedByUser { get; set; }

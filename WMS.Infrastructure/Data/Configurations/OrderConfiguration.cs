@@ -23,6 +23,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(x => x.UpdatedBy)     .IsRequired(false);
         builder.Property(x => x.DeletedBy)     .IsRequired(false);
         builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
+        builder.Property(x => x.TotalPrice).HasPrecision(18, 2).IsRequired();
 
         builder.HasIndex(x => x.UserId)     .HasDatabaseName("orders_user_id_idx");
         builder.HasIndex(x => x.AddressId)  .HasDatabaseName("orders_address_id_idx");

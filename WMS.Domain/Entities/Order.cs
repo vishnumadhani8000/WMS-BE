@@ -10,6 +10,8 @@
         public long? ShipmentId { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public decimal TotalWeightKg { get; set; }
+
+        public decimal TotalPrice {get;set;}
         public string? Notes { get; set; }
         public User? CreatedByUser { get; set; }
         public User? UpdatedByUser { get; set; }
