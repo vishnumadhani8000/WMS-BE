@@ -8,8 +8,6 @@ public class Cart : BaseEntity
 
     public decimal TotalWeightKg { get; set; }
 
-    public bool IsCheckedOut { get; set; } = false;
-
     public User? CreatedByUser { get; set; }
 
     public User? UpdatedByUser { get; set; }

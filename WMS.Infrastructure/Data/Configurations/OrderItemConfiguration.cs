@@ -18,6 +18,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.Property(x => x.CreatedAt)     .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)     .IsRequired(false);
         builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
+        builder.Property(x => x.Price).HasPrecision(18, 2).IsRequired();
 
         builder.HasIndex(x => x.OrderId)   .HasDatabaseName("order_items_order_id_idx");
         builder.HasIndex(x => x.ProductId) .HasDatabaseName("order_items_product_id_idx");
