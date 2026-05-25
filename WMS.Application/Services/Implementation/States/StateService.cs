@@ -161,4 +161,19 @@ public class StateService : IStateService
         return ApiResponse<bool>
             .Success(true, "State deleted successfully.");
     }
+
+    public async Task<ApiResponse<List<StateResponseDTO>>> 
+    GetAllStatesAsync()
+{
+    var states = await _repository
+        .Query()
+        .OrderBy(x => x.Name)
+        .ToListAsync();
+
+    var response = _mapper.Map<List<StateResponseDTO>>(states);
+
+    return ApiResponse<List<StateResponseDTO>>
+        .Success(response, "States fetched successfully.");
+}
+
 }

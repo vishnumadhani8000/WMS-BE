@@ -82,4 +82,12 @@ public class CityController : ControllerBase
         var result = await _cityService.DeleteAsync(id, userId);
         return result.IsSuccess ? Ok(result) : NotFound(result);
     }
+    [HttpGet("state/{stateId}")]
+    public async Task<IActionResult> GetCitiesByState(long stateId)
+    {
+        var result = await _cityService
+            .GetCitiesByStateAsync(stateId);
+
+        return Ok(result);
+    }
 }

@@ -84,4 +84,9 @@ public class StateController : ControllerBase
         var result = await _stateService.DeleteAsync(id, userId);
         return result.IsSuccess ? Ok(result) : NotFound(result);
     }
+    [HttpGet ("all")]
+    public async Task<IActionResult> GetAllStateAsynce(){
+        var result = await _stateService.GetAllStatesAsync();
+        return Ok(result);
+    }
 }

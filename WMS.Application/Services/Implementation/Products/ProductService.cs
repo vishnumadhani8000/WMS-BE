@@ -205,9 +205,9 @@ public class ProductService : IProductService
                 ? query.OrderBy(x => x.Name)
                 : query.OrderByDescending(x => x.Name),
 
-            "weight" => requestDto.Ascending
-                ? query.OrderBy(x => x.WeightKg)
-                : query.OrderByDescending(x => x.WeightKg),
+            "price" => requestDto.Ascending
+                ? query.OrderBy(x => x.Price)
+                : query.OrderByDescending(x => x.Price),
 
             "stock" => requestDto.Ascending
                 ? query.OrderBy(x => x.Stock)

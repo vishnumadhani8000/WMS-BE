@@ -101,6 +101,9 @@ builder.Services.AddScoped<ICityService, CityService>();
 //--Cart-Management
 builder.Services.AddScoped<ICartService,CartService>();
 
+//-User-Address
+builder.Services.AddScoped<IUserAddressService,UserAddressService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
