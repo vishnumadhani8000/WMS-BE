@@ -1,14 +1,11 @@
 namespace WMS.Application.DTOs.Products;
 
-public class ProductResponseDto
+public class ProductResponseCustomerDto
 {
     public long Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
 
-    public decimal WeightKg { get; set; }
-
-    public int Stock { get; set; }
-
+    public decimal Price { get; set; }
     public string? Description { get; set; }
 }

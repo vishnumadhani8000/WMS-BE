@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using AutoMapper;
 using WMS.Application.DTOs.Carts;
 using WMS.Application.DTOs.Products;
@@ -25,6 +24,7 @@ public class AutoMapperConfig : Profile
     {
 
         CreateMap<Product, BaseProductDto>();
+        CreateMap<Product,ProductResponseCustomerDto>();
 
 
         CreateMap<BaseProductDto, Product>()

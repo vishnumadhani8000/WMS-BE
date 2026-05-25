@@ -179,7 +179,7 @@ public class ProductService : IProductService
             .Success("Product deleted successfully.");
     }
 
-    public async Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto)
+    public async Task<ApiResponse<PagedResult<ProductResponseCustomerDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto)
     {
         IQueryable<Product> query = _repository.Query();
 
@@ -225,9 +225,9 @@ public class ProductService : IProductService
             .ToListAsync();
 
         var productDtos =
-            _mapper.Map<List<BaseProductDto>>(products);
+            _mapper.Map<List<ProductResponseCustomerDto>>(products);
 
-        var result = new PagedResult<BaseProductDto>
+        var result = new PagedResult<ProductResponseCustomerDto>
         {
             Items = productDtos,
             TotalCount = totalCount,
@@ -235,7 +235,7 @@ public class ProductService : IProductService
             PageSize = requestDto.PageSize,
         };
 
-        return ApiResponse<PagedResult<BaseProductDto>>
+        return ApiResponse<PagedResult<ProductResponseCustomerDto>>
             .Success(
                 result,
                 "Products fetched successfully."

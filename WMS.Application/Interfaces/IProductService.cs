@@ -10,7 +10,7 @@ public interface IProductService
     Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllAsync(CommonFilterDto requestDto);
 
     Task<ApiResponse<BaseProductDto>> GetByIdAsync(long id );
-    Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto);
+    Task<ApiResponse<PagedResult<ProductResponseCustomerDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto);
 
 
     Task<ApiResponse<BaseProductDto>> CreateAsync( BaseProductDto dto,long createdByUser);
