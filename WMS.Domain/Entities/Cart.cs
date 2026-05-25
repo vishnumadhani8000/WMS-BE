@@ -6,7 +6,7 @@ public class Cart : BaseEntity
 {
     public long UserId { get; set; }
 
-    public decimal TotalWeightKg { get; set; }
+    public bool IsCheckOut{get;set;}
 
     public User? CreatedByUser { get; set; }
 

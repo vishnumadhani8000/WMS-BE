@@ -10,8 +10,6 @@ public class CartItem : BaseEntity
 
     public int Quantity { get; set; }
 
-    public decimal WeightKg { get; set; }
-
     public Cart Cart { get; set; } = null!;
 
     public Product Product { get; set; } = null!;

@@ -16,7 +16,7 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 
         builder.Property(x => x.Quantity).IsRequired();
 
-        builder.Property(x => x.WeightKg).IsRequired().HasColumnType("decimal(10,3)");
+    
 
         builder.Property(x => x.CreatedAt).IsRequired().HasDefaultValueSql("now()");
 
