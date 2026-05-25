@@ -26,6 +26,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(x => x.TotalPrice).HasPrecision(18, 2).IsRequired();
 
         builder.HasIndex(x => x.UserId)     .HasDatabaseName("orders_user_id_idx");
+        builder.HasIndex(x => x.CartId)         .HasDatabaseName("orders_cart_id_idx");
         builder.HasIndex(x => x.AddressId)  .HasDatabaseName("orders_address_id_idx");
         builder.HasIndex(x => x.ShipmentId) .HasDatabaseName("orders_shipment_id_idx");
         builder.HasIndex(x => x.Status)     .HasDatabaseName("orders_status_idx");
@@ -37,6 +38,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasOne(x => x.CreatedByUser).WithMany().HasForeignKey(x => x.CreatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.UpdatedByUser).WithMany().HasForeignKey(x => x.UpdatedBy).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.DeletedByUser).WithMany().HasForeignKey(x => x.DeletedBy).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Cart).WithMany().HasForeignKey(x => x.CartId).OnDelete(DeleteBehavior.Restrict);
 
        builder.HasQueryFilter(x => !x.IsDeleted);
     }
