@@ -47,6 +47,7 @@ public class CartService : ICartService
             return ApiResponse<string>
                 .Failure("Product not found.");
         }
+
         var cart = await _cartRepository
             .Query()
             .FirstOrDefaultAsync(
@@ -58,19 +59,18 @@ public class CartService : ICartService
             {
                 UserId = createdBy,
                 CreatedBy = createdBy,
-                TotalWeightKg = 0
             };
 
             await _cartRepository
                 .AddAsync(cart);
         }
+
         var existingCartItem = await _cartItemRepository
             .Query()
             .Include(x => x.Product)
             .FirstOrDefaultAsync(
                 x => x.CartId == cart.Id &&
-                    x.ProductId == dto.ProductId);
-
+                     x.ProductId == dto.ProductId);
 
         if (existingCartItem != null)
         {
@@ -81,7 +81,7 @@ public class CartService : ICartService
             {
                 return ApiResponse<string>
                     .Failure(
-                       "All available stock is already added to your cart.");
+                        "All available stock is already added to your cart.");
             }
 
             existingCartItem.Quantity = newQuantity;
@@ -91,13 +91,12 @@ public class CartService : ICartService
             await _cartItemRepository
                 .UpdateAsync(existingCartItem);
         }
-
         else
         {
             if (dto.Quantity > product.Stock)
             {
                 return ApiResponse<string>
-                        .Failure($"Only {product.Stock} quantity available.");
+                    .Failure($"Only {product.Stock} quantity available.");
             }
 
             var cartItem = new CartItem
@@ -105,7 +104,6 @@ public class CartService : ICartService
                 CartId = cart.Id,
                 ProductId = dto.ProductId,
                 Quantity = dto.Quantity,
-                WeightKg = product.WeightKg,
                 CreatedBy = createdBy
             };
 
@@ -113,12 +111,11 @@ public class CartService : ICartService
                 .AddAsync(cartItem);
         }
 
-        await UpdateCartWeightAsync(cart.Id);
-
         return ApiResponse<string>
             .Success("Product added to cart.");
     }
 
+    // UPDATE QUANTITY
     public async Task<ApiResponse<object>> UpdateQuantityAsync(
         long cartItemId,
         UpdateCartItemQuantityDto dto,
@@ -155,13 +152,11 @@ public class CartService : ICartService
         await _cartItemRepository
             .UpdateAsync(cartItem);
 
-        await UpdateCartWeightAsync(cartItem.CartId);
-
         return ApiResponse<object>
             .Success("Cart item updated successfully.");
     }
 
-
+    // DELETE CART ITEM
     public async Task<ApiResponse<object>> DeleteCartItemAsync(
         long cartItemId,
         long deletedBy)
@@ -170,7 +165,7 @@ public class CartService : ICartService
             .Query()
             .FirstOrDefaultAsync(
                 x => x.Id == cartItemId &&
-                    x.DeletedAt == null);
+                     x.DeletedAt == null);
 
         if (cartItem == null)
         {
@@ -178,19 +173,16 @@ public class CartService : ICartService
                 .Failure("Cart item not found.");
         }
 
-        var cartId = cartItem.CartId;
-
         cartItem.DeletedBy = deletedBy;
 
         await _cartItemRepository
             .SoftDeleteAsync(cartItem);
 
-        await UpdateCartWeightAsync(cartId);
-
         return ApiResponse<object>
             .Success("Cart item deleted successfully.");
     }
 
+    // GET CART
     public async Task<ApiResponse<CartResponseDto>> GetCartAsync(long userId)
     {
         var cart = await _cartRepository
@@ -217,6 +209,7 @@ public class CartService : ICartService
                     .SoftDeleteAsync(item);
 
                 updated = true;
+
                 continue;
             }
 
@@ -228,6 +221,7 @@ public class CartService : ICartService
                     .SoftDeleteAsync(item);
 
                 updated = true;
+
                 continue;
             }
 
@@ -245,8 +239,6 @@ public class CartService : ICartService
 
         if (updated)
         {
-            await UpdateCartWeightAsync(cart.Id);
-
             cart = await _cartRepository
                 .Query()
                 .AsNoTracking()
@@ -258,33 +250,11 @@ public class CartService : ICartService
 
         var response = _mapper.Map<CartResponseDto>(cart);
 
+        response.TotalWeightKg = cart.CartItems
+            .Where(x => x.DeletedAt == null && x.Product != null)
+            .Sum(x => x.Product.WeightKg * x.Quantity);
+
         return ApiResponse<CartResponseDto>
             .Success(response);
-    }
-    // PRIVATE METHOD
-    private async Task UpdateCartWeightAsync(
-        long cartId)
-    {
-        var cartItems = await _cartItemRepository
-            .Query()
-            .Include(x => x.Product)
-            .Where(x =>
-                x.CartId == cartId &&
-                x.DeletedAt == null)
-            .ToListAsync();
-
-        var totalWeight = cartItems.Sum(x =>
-            x.Product.WeightKg * x.Quantity);
-
-        var cart = await _cartRepository
-            .Query()
-            .FirstAsync(
-                x => x.Id == cartId);
-
-        cart.TotalWeightKg = totalWeight;
-        cart.UpdatedAt = DateTime.UtcNow;
-
-        await _cartRepository
-            .UpdateAsync(cart);
     }
 }
