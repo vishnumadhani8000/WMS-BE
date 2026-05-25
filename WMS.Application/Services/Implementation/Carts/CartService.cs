@@ -49,9 +49,10 @@ public class CartService : ICartService
         }
 
         var cart = await _cartRepository
-            .Query()
-            .FirstOrDefaultAsync(
-                x => x.UserId == createdBy);
+       .Query()
+       .FirstOrDefaultAsync(
+           x => x.UserId == createdBy &&
+                !x.IsCheckOut);
 
         if (cart == null)
         {
@@ -189,7 +190,7 @@ public class CartService : ICartService
             .Query()
             .Include(x => x.CartItems)
             .ThenInclude(x => x.Product)
-            .FirstOrDefaultAsync(x => x.UserId == userId);
+            .FirstOrDefaultAsync(x => x.UserId == userId && !x.IsCheckOut);
 
         if (cart == null)
         {
