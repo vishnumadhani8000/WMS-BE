@@ -2,6 +2,7 @@ using AutoMapper;
 using WMS.Application.DTOs.Carts;
 using WMS.Application.DTOs.Products;
 using WMS.Application.DTOs.State;
+using WMS.Application.DTOs.UserAddresses;
 using WMS.Application.DTOs.Vehicles;
 using WMS.Domain.Entities;
 
@@ -16,47 +17,49 @@ public class AutoMapperConfig : Profile
         StateMappings();
         CityMappings();
         CartMappings();
+        UserAddressMappings();
     }
 
     private void ProductMappings()
     {
 
-        CreateMap<Product, ProductResponseDto>();
+        CreateMap<Product, BaseProductDto>();
+        CreateMap<Product,ProductResponseCustomerDto>();
 
 
-        CreateMap<ProductRequestDto, Product>()
-         .ForMember(
-             dest => dest.Id,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.CreatedAt,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.CreatedBy,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.UpdatedAt,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.UpdatedBy,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.IsDeleted,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.DeletedAt,
-             opt => opt.Ignore()
-         )
-         .ForMember(
-             dest => dest.DeletedBy,
-             opt => opt.Ignore()
-         );
+        CreateMap<BaseProductDto, Product>()
+        .ForMember(
+            dest => dest.Id,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.CreatedAt,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.CreatedBy,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.UpdatedAt,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.UpdatedBy,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.IsDeleted,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.DeletedAt,
+            opt => opt.Ignore()
+        )
+        .ForMember(
+            dest => dest.DeletedBy,
+            opt => opt.Ignore()
+        );
     }
     private void VehicleMappings()
     {
@@ -105,10 +108,10 @@ public class AutoMapperConfig : Profile
     {
 
         CreateMap<CartItem, CartItemResponseDto>()
-            .ForMember(dest => dest.CartItemId,opt => opt.MapFrom(src => src.Id))
-            .ForMember( dest => dest.ProductName,opt => opt.MapFrom(src => src.Product.Name))
-            .ForMember(dest => dest.AvailableStock,opt => opt.MapFrom(src => src.Product.Stock));
-
+            .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+            .ForMember(dest => dest.AvailableStock, opt => opt.MapFrom(src => src.Product.Stock))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Product.Price));
 
         CreateMap<Cart, CartResponseDto>()
             .ForMember(
@@ -118,6 +121,46 @@ public class AutoMapperConfig : Profile
                 dest => dest.Items,
                 opt => opt.MapFrom(src => src.CartItems));
 
+    }
+
+    private void UserAddressMappings()
+    {
+        CreateMap<UserAddress, UserAddressResponseDto>()
+            .ForMember(dest => dest.AddressId,
+                opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.StateName,
+                opt => opt.MapFrom(src => src.State.Name))
+            .ForMember(dest => dest.CityName,
+                opt => opt.MapFrom(src => src.City.Name));
+
+        CreateMap<UserAddressRequestDto, UserAddress>()
+            .ForMember(dest => dest.Id,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.UserId,
+                opt => opt.Ignore())
+
+            .ForMember(dest => dest.IsDefault,
+            opt=>opt.Ignore())
+            .ForMember(dest => dest.CreatedAt,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedBy,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedAt,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedBy,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.User,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.State,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.City,
+                opt => opt.Ignore())
+            .ForMember(dest => dest.Orders,
+                opt => opt.Ignore());
     }
 
 

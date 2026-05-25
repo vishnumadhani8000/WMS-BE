@@ -21,7 +21,7 @@ public class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllAsync(CommonFilterDto requestDto)
+    public async Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllAsync(CommonFilterDto requestDto)
     {
         IQueryable<Product> query = _repository.Query();
 
@@ -52,6 +52,10 @@ public class ProductService : IProductService
             "stock" => requestDto.Ascending
                 ? query.OrderBy(x => x.Stock)
                 : query.OrderByDescending(x => x.Stock),
+            
+            "price" => requestDto.Ascending
+                ? query.OrderBy(x => x.Price)
+                : query.OrderByDescending(x => x.Price),
 
             _ => query.OrderByDescending(x => x.CreatedAt),
         };
@@ -65,9 +69,9 @@ public class ProductService : IProductService
             .ToListAsync();
 
         var productDtos =
-            _mapper.Map<List<ProductResponseDto>>(products);
+            _mapper.Map<List<BaseProductDto>>(products);
 
-        var result = new PagedResult<ProductResponseDto>
+        var result = new PagedResult<BaseProductDto>
         {
             Items = productDtos,
             TotalCount = totalCount,
@@ -75,33 +79,33 @@ public class ProductService : IProductService
             PageSize = requestDto.PageSize,
         };
 
-        return ApiResponse<PagedResult<ProductResponseDto>>
+        return ApiResponse<PagedResult<BaseProductDto>>
             .Success(
                 result,
                 "Products fetched successfully."
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> GetByIdAsync(long id)
+    public async Task<ApiResponse<BaseProductDto>> GetByIdAsync(long id)
     {
         var product = await _repository.GetByIdAsync(id);
         if (product == null)
         {
-            return ApiResponse<ProductResponseDto>
+            return ApiResponse<BaseProductDto>
                 .Failure("Product not found.");
         }
 
         var response =
-            _mapper.Map<ProductResponseDto>(product);
+            _mapper.Map<BaseProductDto>(product);
 
-        return ApiResponse<ProductResponseDto>
+        return ApiResponse<BaseProductDto>
             .Success(
                 response,
                 "Product fetched successfully."
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> CreateAsync(ProductRequestDto dto, long userId)
+    public async Task<ApiResponse<BaseProductDto>> CreateAsync(BaseProductDto dto, long userId)
     {
         var product = _mapper.Map<Product>(dto);
 
@@ -110,23 +114,31 @@ public class ProductService : IProductService
         await _repository.AddAsync(product);
 
         var response =
-            _mapper.Map<ProductResponseDto>(product);
+            _mapper.Map<BaseProductDto>(product);
 
-        return ApiResponse<ProductResponseDto>
+        return ApiResponse<BaseProductDto>
             .Success(
                 response,
                 "Product created successfully."
             );
     }
 
-    public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(long id, ProductRequestDto dto, long userId)
+    public async Task<ApiResponse<BaseProductDto>> UpdateAsync(BaseProductDto dto, long userId)
     {
 
-        var product = await _repository.GetByIdAsync(id);
+        if (!dto.Id.HasValue)
+        {
+            return ApiResponse<BaseProductDto>
+                .Failure("Product id is required.");
+        }
+
+        var product = await _repository.GetByIdAsync(dto.Id.Value);
+
+
 
         if (product == null)
         {
-            return ApiResponse<ProductResponseDto>
+            return ApiResponse<BaseProductDto>
                 .Failure("Product not found.");
         }
 
@@ -139,9 +151,9 @@ public class ProductService : IProductService
         await _repository.UpdateAsync(product);
 
         var response =
-            _mapper.Map<ProductResponseDto>(product);
+            _mapper.Map<BaseProductDto>(product);
 
-        return ApiResponse<ProductResponseDto>
+        return ApiResponse<BaseProductDto>
             .Success(
                 response,
                 "Product updated successfully."
@@ -167,11 +179,11 @@ public class ProductService : IProductService
             .Success("Product deleted successfully.");
     }
 
-    public async Task<ApiResponse<PagedResult<ProductResponseDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto)
+    public async Task<ApiResponse<PagedResult<ProductResponseCustomerDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto)
     {
         IQueryable<Product> query = _repository.Query();
 
-        query = query.Where(x=>x.Stock>0);
+        query = query.Where(x => x.Stock > 0);
 
         if (!string.IsNullOrWhiteSpace(requestDto.Search))
         {
@@ -193,9 +205,9 @@ public class ProductService : IProductService
                 ? query.OrderBy(x => x.Name)
                 : query.OrderByDescending(x => x.Name),
 
-            "weight" => requestDto.Ascending
-                ? query.OrderBy(x => x.WeightKg)
-                : query.OrderByDescending(x => x.WeightKg),
+            "price" => requestDto.Ascending
+                ? query.OrderBy(x => x.Price)
+                : query.OrderByDescending(x => x.Price),
 
             "stock" => requestDto.Ascending
                 ? query.OrderBy(x => x.Stock)
@@ -213,9 +225,9 @@ public class ProductService : IProductService
             .ToListAsync();
 
         var productDtos =
-            _mapper.Map<List<ProductResponseDto>>(products);
+            _mapper.Map<List<ProductResponseCustomerDto>>(products);
 
-        var result = new PagedResult<ProductResponseDto>
+        var result = new PagedResult<ProductResponseCustomerDto>
         {
             Items = productDtos,
             TotalCount = totalCount,
@@ -223,7 +235,7 @@ public class ProductService : IProductService
             PageSize = requestDto.PageSize,
         };
 
-        return ApiResponse<PagedResult<ProductResponseDto>>
+        return ApiResponse<PagedResult<ProductResponseCustomerDto>>
             .Success(
                 result,
                 "Products fetched successfully."

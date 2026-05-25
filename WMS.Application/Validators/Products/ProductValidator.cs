@@ -4,8 +4,8 @@ using WMS.Application.DTOs.Products;
 
 namespace WMS.Application.Validators.Products;
 
-public class ProductValidator 
-    : AbstractValidator<ProductRequestDto>
+public class ProductValidator
+    : AbstractValidator<BaseProductDto>
 {
     public ProductValidator()
     {
@@ -32,23 +32,31 @@ public class ProductValidator
             .WithMessage("Weight must not exceed 9999 kg.");
 
 
+        RuleFor(x => x.Price)
+                .NotEmpty()
+                .WithMessage("Price is required.")
 
-        RuleFor(x => x.Stock)
-            .NotEmpty()
-            .WithMessage("Stock is required.")
+                .GreaterThan(0)
+                .WithMessage("Weight must be greater than 0.")
 
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("Stock cannot be negative.")
+                .LessThanOrEqualTo(10000000)
+                .WithMessage("Weight must not exceed 10000000");
 
-            .LessThanOrEqualTo(1000000)
-            .WithMessage("Stock must not exceed 1000000.");
+
+            RuleFor(x => x.Stock)
+
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Stock cannot be negative.")
+
+                .LessThanOrEqualTo(1000000)
+                .WithMessage("Stock must not exceed 1000000.");
 
 
 
         RuleFor(x => x.Description)
             .MaximumLength(500)
             .WithMessage("Description must not exceed 500 characters.")
-            
+
             .When(x => !string.IsNullOrWhiteSpace(x.Description));
     }
 }

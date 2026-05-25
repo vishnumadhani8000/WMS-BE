@@ -176,6 +176,29 @@ public class CityService : ICityService
         return ApiResponse<bool>
             .Success(true, "City deleted successfully.");
     }
+    public async Task<ApiResponse<List<CityResponseDTO>>> 
+    GetCitiesByStateAsync(long stateId)
+{
+    var stateExists = await _stateRepository
+        .ExistsAsync(x => x.Id == stateId);
+
+    if (!stateExists)
+    {
+        return ApiResponse<List<CityResponseDTO>>
+            .Failure("State not found.");
+    }
+
+    var cities = await _repository
+        .Query()
+        .Where(x => x.StateId == stateId)
+        .OrderBy(x => x.Name)
+        .ToListAsync();
+
+    var response = _mapper.Map<List<CityResponseDTO>>(cities);
+
+    return ApiResponse<List<CityResponseDTO>>
+        .Success(response, "Cities fetched successfully.");
+}
 
  
 }

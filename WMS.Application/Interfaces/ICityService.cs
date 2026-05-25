@@ -11,4 +11,5 @@ public interface ICityService
     Task<ApiResponse<bool>>                          CreateAsync(CityRequestDTO dto, long createdBy);
     Task<ApiResponse<bool>>                          UpdateAsync(long id, CityRequestDTO dto, long updatedBy);
     Task<ApiResponse<bool>>                          DeleteAsync(long id, long deletedBy);
+    Task<ApiResponse<List<CityResponseDTO>>> GetCitiesByStateAsync(long stateId);
 }
