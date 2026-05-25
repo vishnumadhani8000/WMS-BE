@@ -43,15 +43,13 @@ public class ProductValidator
                 .WithMessage("Weight must not exceed 10000000");
 
 
-        RuleFor(x => x.Stock)
-            .NotEmpty()
-            .WithMessage("Stock is required.")
+            RuleFor(x => x.Stock)
 
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("Stock cannot be negative.")
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Stock cannot be negative.")
 
-            .LessThanOrEqualTo(1000000)
-            .WithMessage("Stock must not exceed 1000000.");
+                .LessThanOrEqualTo(1000000)
+                .WithMessage("Stock must not exceed 1000000.");
 
 
 

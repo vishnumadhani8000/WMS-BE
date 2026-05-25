@@ -91,13 +91,13 @@ public class CartService : ICartService
             await _cartItemRepository
                 .UpdateAsync(existingCartItem);
         }
-      
+
         else
         {
             if (dto.Quantity > product.Stock)
             {
                 return ApiResponse<string>
-                        .Failure(  $"Only {product.Stock} quantity available.");
+                        .Failure($"Only {product.Stock} quantity available.");
             }
 
             var cartItem = new CartItem
@@ -197,8 +197,7 @@ public class CartService : ICartService
             .Query()
             .Include(x => x.CartItems)
             .ThenInclude(x => x.Product)
-            .FirstOrDefaultAsync(
-                x => x.UserId == userId);
+            .FirstOrDefaultAsync(x => x.UserId == userId);
 
         if (cart == null)
         {
@@ -208,31 +207,29 @@ public class CartService : ICartService
 
         bool updated = false;
 
-
         foreach (var item in cart.CartItems.ToList())
         {
-
             if (item.Product == null)
             {
                 item.DeletedAt = DateTime.UtcNow;
+
                 await _cartItemRepository
                     .SoftDeleteAsync(item);
 
                 updated = true;
-
                 continue;
             }
-
 
             if (item.Product.Stock <= 0)
             {
                 item.DeletedAt = DateTime.UtcNow;
+
                 await _cartItemRepository
                     .SoftDeleteAsync(item);
+
                 updated = true;
                 continue;
             }
-
 
             if (item.Quantity > item.Product.Stock)
             {
@@ -249,22 +246,21 @@ public class CartService : ICartService
         if (updated)
         {
             await UpdateCartWeightAsync(cart.Id);
+
             cart = await _cartRepository
                 .Query()
+                .AsNoTracking()
                 .Include(x => x.CartItems
                     .Where(ci => ci.DeletedAt == null))
                 .ThenInclude(x => x.Product)
-                .FirstAsync(
-                    x => x.Id == cart.Id);
+                .FirstAsync(x => x.Id == cart.Id);
         }
 
         var response = _mapper.Map<CartResponseDto>(cart);
 
-
         return ApiResponse<CartResponseDto>
             .Success(response);
     }
-
     // PRIVATE METHOD
     private async Task UpdateCartWeightAsync(
         long cartId)
