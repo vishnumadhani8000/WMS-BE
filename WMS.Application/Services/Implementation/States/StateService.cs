@@ -167,6 +167,7 @@ public class StateService : IStateService
 {
     var states = await _repository
         .Query()
+        .Where(x => x.Cities.Any())
         .OrderBy(x => x.Name)
         .ToListAsync();
 
