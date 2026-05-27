@@ -1,3 +1,4 @@
+
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WMS.Application;
@@ -5,7 +6,6 @@ using WMS.Application.Common;
 using WMS.Application.DTOs.UserAddresses;
 using WMS.Application.Services;
 using WMS.Domain.Entities;
-using WMS.Shared.Response;
 
 namespace WMS.Infrastructure.Services;
 
@@ -28,7 +28,7 @@ public class UserAddressService : IUserAddressService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<IEnumerable<UserAddressResponseDto>>>
+    public async Task<IEnumerable<UserAddressResponseDto>>
         GetUserAddressesAsync(long userId)
     {
         var addresses = await _addressRepository
@@ -39,14 +39,11 @@ public class UserAddressService : IUserAddressService
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
-        var response = _mapper.Map<
+        return _mapper.Map<
             IEnumerable<UserAddressResponseDto>>(addresses);
-
-        return ApiResponse<IEnumerable<UserAddressResponseDto>>
-            .Success(response);
     }
 
-    public async Task<ApiResponse<UserAddressResponseDto>>
+    public async Task<UserAddressResponseDto>
         GetByIdAsync(long addressId, long userId)
     {
         var address = await _addressRepository
@@ -59,29 +56,24 @@ public class UserAddressService : IUserAddressService
 
         if (address == null)
         {
-            return ApiResponse<UserAddressResponseDto>
-                .Failure("Address not found.");
+            throw new KeyNotFoundException(
+                "Address not found.");
         }
 
-        var response = _mapper
-            .Map<UserAddressResponseDto>(address);
-
-        return ApiResponse<UserAddressResponseDto>
-            .Success(response);
+        return _mapper.Map<UserAddressResponseDto>(address);
     }
 
-    public async Task<ApiResponse<UserAddressResponseDto>> CreateAsync(
+    public async Task<UserAddressResponseDto> CreateAsync(
         long userId,
         UserAddressRequestDto dto)
     {
         var stateExists = await _stateRepository
-            .Query()
-            .AnyAsync(x => x.Id == dto.StateId);
+            .ExistsAsync(x => x.Id == dto.StateId);
 
         if (!stateExists)
         {
-            return ApiResponse<UserAddressResponseDto>
-                .Failure("Invalid state id.");
+            throw new ArgumentException(
+                "Invalid state id.");
         }
 
         var city = await _cityRepository
@@ -92,12 +84,11 @@ public class UserAddressService : IUserAddressService
 
         if (city == null)
         {
-            return ApiResponse<UserAddressResponseDto>
-                .Failure("Invalid city id for selected state.");
+            throw new ArgumentException(
+                "Invalid city id for selected state.");
         }
 
         var address = _mapper.Map<UserAddress>(dto);
-
         address.UserId = userId;
 
         await _addressRepository.AddAsync(address);
@@ -108,13 +99,11 @@ public class UserAddressService : IUserAddressService
             .Include(x => x.City)
             .FirstAsync(x => x.Id == address.Id);
 
-        var response = _mapper.Map<UserAddressResponseDto>(createdAddress);
-
-        return ApiResponse<UserAddressResponseDto>
-            .Success(response);
+        return _mapper.Map<UserAddressResponseDto>(
+            createdAddress);
     }
 
-    public async Task<ApiResponse<string>> UpdateAsync(
+    public async Task UpdateAsync(
         long addressId,
         long userId,
         UserAddressRequestDto dto)
@@ -126,19 +115,16 @@ public class UserAddressService : IUserAddressService
 
         if (address == null)
         {
-            return ApiResponse<string>
-                .Failure("Address not found.");
+            throw new KeyNotFoundException(
+                "Address not found.");
         }
 
         _mapper.Map(dto, address);
 
         await _addressRepository.UpdateAsync(address);
-
-        return ApiResponse<string>
-            .Success("Address updated successfully.");
     }
 
-    public async Task<ApiResponse<string>> DeleteAsync(
+    public async Task DeleteAsync(
         long addressId,
         long userId)
     {
@@ -149,13 +135,11 @@ public class UserAddressService : IUserAddressService
 
         if (address == null)
         {
-            return ApiResponse<string>
-                .Failure("Address not found.");
+            throw new KeyNotFoundException(
+                "Address not found.");
         }
 
         await _addressRepository.SoftDeleteAsync(address);
-
-        return ApiResponse<string>
-            .Success("Address deleted successfully.");
     }
 }
+

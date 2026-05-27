@@ -27,43 +27,41 @@ public class CartService : ICartService
     }
 
     // ADD TO CART
-    public async Task<ApiResponse<string>> AddToCartAsync(
-        AddToCartDto dto,
-        long createdBy)
+    public async Task<string> AddToCartAsync(
+    AddToCartDto dto,
+    long createdBy)
     {
         if (dto.Quantity <= 0)
         {
-            return ApiResponse<string>
-                .Failure("Quantity must be greater than 0.");
+            throw new ArgumentException(
+                "Quantity must be greater than 0.");
         }
 
         var product = await _productRepository
             .Query()
-            .FirstOrDefaultAsync(
-                x => x.Id == dto.ProductId);
+            .FirstOrDefaultAsync(x => x.Id == dto.ProductId);
 
         if (product == null)
         {
-            return ApiResponse<string>
-                .Failure("Product not found.");
+            throw new KeyNotFoundException(
+                "Product not found.");
         }
 
         var cart = await _cartRepository
-       .Query()
-       .FirstOrDefaultAsync(
-           x => x.UserId == createdBy &&
-                !x.IsCheckOut);
+            .Query()
+            .FirstOrDefaultAsync(
+                x => x.UserId == createdBy &&
+                     !x.IsCheckOut);
 
         if (cart == null)
         {
             cart = new Cart
             {
                 UserId = createdBy,
-                CreatedBy = createdBy,
+                CreatedBy = createdBy
             };
 
-            await _cartRepository
-                .AddAsync(cart);
+            await _cartRepository.AddAsync(cart);
         }
 
         var existingCartItem = await _cartItemRepository
@@ -80,9 +78,8 @@ public class CartService : ICartService
 
             if (newQuantity > product.Stock)
             {
-                return ApiResponse<string>
-                    .Failure(
-                        "All available stock is already added to your cart.");
+                throw new InvalidOperationException(
+                    "All available stock is already added to your cart.");
             }
 
             existingCartItem.Quantity = newQuantity;
@@ -96,8 +93,8 @@ public class CartService : ICartService
         {
             if (dto.Quantity > product.Stock)
             {
-                return ApiResponse<string>
-                    .Failure($"Only {product.Stock} quantity available.");
+                throw new InvalidOperationException(
+                    $"Only {product.Stock} quantity available.");
             }
 
             var cartItem = new CartItem
@@ -112,20 +109,18 @@ public class CartService : ICartService
                 .AddAsync(cartItem);
         }
 
-        return ApiResponse<string>
-            .Success("Product added to cart.");
+        return "Product added to cart.";
     }
-
     // UPDATE QUANTITY
-    public async Task<ApiResponse<object>> UpdateQuantityAsync(
+    public async Task<string> UpdateQuantityAsync(
         long cartItemId,
         UpdateCartItemQuantityDto dto,
         long updatedBy)
     {
         if (dto.Quantity <= 0)
         {
-            return ApiResponse<object>
-                .Failure("Quantity must be greater than 0.");
+            throw new ArgumentException(
+            "Quantity must be greater than 0.");
         }
 
         var cartItem = await _cartItemRepository
@@ -136,14 +131,14 @@ public class CartService : ICartService
 
         if (cartItem == null)
         {
-            return ApiResponse<object>
-                .Failure("Cart item not found.");
+            throw new KeyNotFoundException(
+           "Cart item not found.");
         }
 
         if (dto.Quantity > cartItem.Product.Stock)
         {
-            return ApiResponse<object>
-                .Failure($"Only {cartItem.Product.Stock} quantity available.");
+            throw new ArgumentException(
+            $"Only {cartItem.Product.Stock} quantity available.");
         }
 
         cartItem.Quantity = dto.Quantity;
@@ -153,12 +148,11 @@ public class CartService : ICartService
         await _cartItemRepository
             .UpdateAsync(cartItem);
 
-        return ApiResponse<object>
-            .Success("Cart item updated successfully.");
+        return "Cart item updated successfully.";
     }
 
     // DELETE CART ITEM
-    public async Task<ApiResponse<object>> DeleteCartItemAsync(
+    public async Task<string> DeleteCartItemAsync(
         long cartItemId,
         long deletedBy)
     {
@@ -170,8 +164,8 @@ public class CartService : ICartService
 
         if (cartItem == null)
         {
-            return ApiResponse<object>
-                .Failure("Cart item not found.");
+            throw new KeyNotFoundException(
+          "Cart item not found.");
         }
 
         cartItem.DeletedBy = deletedBy;
@@ -179,23 +173,26 @@ public class CartService : ICartService
         await _cartItemRepository
             .SoftDeleteAsync(cartItem);
 
-        return ApiResponse<object>
-            .Success("Cart item deleted successfully.");
+        return "Cart item deleted successfully.";
     }
 
     // GET CART
-    public async Task<ApiResponse<CartResponseDto>> GetCartAsync(long userId)
+    public async Task<CartResponseDto> GetCartAsync(long userId)
     {
         var cart = await _cartRepository
-            .Query()
-            .Include(x => x.CartItems)
-            .ThenInclude(x => x.Product)
-            .FirstOrDefaultAsync(x => x.UserId == userId && !x.IsCheckOut);
+       .Query()
+       .Include(x => x.CartItems)
+       .ThenInclude(x => x.Product)
+       .FirstOrDefaultAsync(
+           x => x.UserId == userId &&
+                !x.IsCheckOut);
 
         if (cart == null)
         {
-            return ApiResponse<CartResponseDto>
-                .Empty("Cart not found.");
+            if (cart == null)
+            {
+                return new CartResponseDto();
+            }
         }
 
         bool updated = false;
@@ -255,7 +252,6 @@ public class CartService : ICartService
             .Where(x => x.DeletedAt == null && x.Product != null)
             .Sum(x => x.Product.WeightKg * x.Quantity);
 
-        return ApiResponse<CartResponseDto>
-            .Success(response);
+        return response;
     }
 }

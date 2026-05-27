@@ -6,20 +6,20 @@ namespace WMS.Application.Interfaces;
 
 public interface IVehicleService
 {
-    Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(CommonFilterDto requestDto);
-    Task<ApiResponse<VehicleResponseDto>> GetByIdAsync(long id);
-    Task<ApiResponse<VehicleResponseDto>> CreateAsync(
+    Task<PagedResult<VehicleResponseDto>> GetAllAsync(CommonFilterDto requestDto);
+    Task<VehicleResponseDto> GetByIdAsync(long id);
+    Task<VehicleResponseDto> CreateAsync(
         VehicleRequestDto dto,
         long userId
     );
 
-    Task<ApiResponse<VehicleResponseDto>> UpdateAsync(
+    Task<VehicleResponseDto> UpdateAsync(
         long id,
         VehicleRequestDto dto,  
         long userId
     );
 
-    Task<ApiResponse<object>> DeleteAsync(
+    Task DeleteAsync(
         long id,
         long userId
     );

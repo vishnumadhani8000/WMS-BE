@@ -17,7 +17,4 @@ public class ApiResponse<T>
     public static ApiResponse<T> Failure(string message, List<string>? errors = null)
         => new() { IsSuccess = false, Message = message, Errors = errors };
 
-
-    public static ApiResponse<T> Empty(string message = "No data available.")
-        => new() { IsSuccess = true, Message = message, Data = default };
 }

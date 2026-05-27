@@ -1,7 +1,9 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WMS.Application.Interfaces;
+using WMS.Shared.Response;
 
 namespace WMS.API.Controllers;
 
@@ -17,23 +19,22 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    [HttpPost]
+    private long UserId =>Convert.ToInt64( User.FindFirstValue( ClaimTypes.NameIdentifier));
+
     [HttpPost]
     public async Task<IActionResult> CreateOrder(
-    [FromBody] OrderRequestDto request)
+        [FromBody] OrderRequestDto request)
     {
-        var userId = Convert.ToInt64(
-            User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var message = await _orderService
+            .CreateOrderAsync(
+                UserId,
+                request);
 
-        var response = await _orderService
-            .CreateOrderAsync(userId, request);
-
-        if (!response.IsSuccess)
-        {
-            return BadRequest(response);
-        }
-
-        return Ok(response);
+        return Ok(
+            ApiResponse<string>.Success(
+                message
+            )
+        );
     }
 
     [HttpPut("{orderId}")]
@@ -41,29 +42,33 @@ public class OrdersController : ControllerBase
         long orderId,
         [FromBody] OrderUpdateDto request)
     {
-        var userId = Convert.ToInt64(
-            User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var order = await _orderService
+            .UpdateOrderAsync(
+                orderId,
+                request,
+                UserId);
 
-        var response = await _orderService
-            .UpdateOrderAsync(orderId, request, userId);
-
-        if (!response.IsSuccess)
-        {
-            return BadRequest(response);
-        }
-
-        return Ok(response);
+        return Ok(
+            ApiResponse<OrderResponseDto>.Success(
+                order,
+                "Order updated successfully."
+            )
+        );
     }
 
     [HttpGet]
     public async Task<IActionResult> GetUserOrders()
     {
-        var userId = Convert.ToInt64(
-            User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var orders = await _orderService
+            .GetUserOrdersAsync(
+                UserId);
 
-        var response = await _orderService
-            .GetUserOrdersAsync(userId);
-
-        return Ok(response);
+        return Ok(
+            ApiResponse<List<OrderResponseDto>>.Success(
+                orders,
+                "Orders fetched successfully."
+            )
+        );
     }
 }
+

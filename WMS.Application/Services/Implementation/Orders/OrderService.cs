@@ -26,7 +26,7 @@ public class OrderService : IOrderService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<string>> CreateOrderAsync(
+    public async Task<string> CreateOrderAsync(
         long userId,
         OrderRequestDto request)
     {
@@ -41,50 +41,46 @@ public class OrderService : IOrderService
                 && !x.IsCheckOut);
 
         if (cart == null)
-        {
-            return ApiResponse<string>
-                .Failure("Cart not found.");
+        {  
+            throw new KeyNotFoundException("Cart not found.");
+
         }
 
         if (cart.IsCheckOut)
         {
-            return ApiResponse<string>
-                .Failure("Cart already checked out.");
+            throw new ArgumentException("Cart already checked out.");
+            
         }
 
         if (!cart.CartItems.Any())
         {
-            return ApiResponse<string>
-                .Failure("Cart is empty.");
+            throw new ArgumentException("Cart is empty.");
         }
 
         foreach (var item in cart.CartItems)
         {
             if (item.Product == null)
             {
-                return ApiResponse<string>
-                    .Failure("Product not found.");
+                throw new KeyNotFoundException("Product not found.");
+
             }
 
             if (item.Quantity <= 0)
             {
-                return ApiResponse<string>
-                    .Failure(
-                        $"Invalid quantity for product {item.Product.Name}.");
+                throw new ArgumentException($"Invalid quantity for product {item.Product.Name}.");
+          
             }
 
             if (item.Product.Stock <= 0)
             {
-                return ApiResponse<string>
-                    .Failure(
-                        $"{item.Product.Name} is out of stock.");
+                throw new ArgumentException( $"{item.Product.Name} is out of stock.");
+                
             }   
 
             if (item.Quantity > item.Product.Stock)
             {
-                return ApiResponse<string>
-                    .Failure(
-                        $"Only {item.Product.Stock} quantity available for {item.Product.Name}.");
+                throw new ArgumentException( $"Only {item.Product.Stock} quantity available for {item.Product.Name}.");
+               
             }
         }
 
@@ -130,11 +126,11 @@ public class OrderService : IOrderService
         cart.IsCheckOut = true;
         await _cartRepository.UpdateAsync(cart);
 
-        return ApiResponse<string>
-            .Success("Order created successfully.");
+       
+            return "Order created successfully.";
     }
 
-    public async Task<ApiResponse<OrderResponseDto>> UpdateOrderAsync(
+    public async Task<OrderResponseDto> UpdateOrderAsync(
         long orderId,
         OrderUpdateDto request,
         long updatedBy)
@@ -147,8 +143,7 @@ public class OrderService : IOrderService
 
         if (order == null)
         {
-            return ApiResponse<OrderResponseDto>
-                .Failure("Order not found.");
+            throw new KeyNotFoundException("Order not found.");
         }
 
         order.Status = request.Status;
@@ -156,13 +151,12 @@ public class OrderService : IOrderService
         order.UpdatedAt = DateTime.UtcNow;
         order.UpdatedBy = updatedBy;
         await _orderRepository.UpdateAsync(order);
-        var response = _mapper.Map<OrderResponseDto>(order);
+        return _mapper.Map<OrderResponseDto>(order);
 
-        return ApiResponse<OrderResponseDto>
-            .Success(response, "Order updated successfully.");
+       
     }
 
-    public async Task<ApiResponse<List<OrderResponseDto>>> GetUserOrdersAsync(
+    public async Task<List<OrderResponseDto>> GetUserOrdersAsync(
     long userId)
 {
     var orders = await _orderRepository
@@ -180,9 +174,8 @@ public class OrderService : IOrderService
         .OrderByDescending(x => x.CreatedAt)
         .ToListAsync();
 
-    var response = _mapper.Map<List<OrderResponseDto>>(orders);
+    return _mapper.Map<List<OrderResponseDto>>(orders);
 
-    return ApiResponse<List<OrderResponseDto>>
-        .Success(response, "Orders fetched successfully.");
+ 
 }
 }

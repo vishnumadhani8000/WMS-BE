@@ -4,15 +4,15 @@ namespace WMS.Application.Interfaces;
 
 public interface IOrderService
 {
-    Task<ApiResponse<string >> CreateOrderAsync(
+    Task<string > CreateOrderAsync(
         long userId,
         OrderRequestDto request);
 
-    Task<ApiResponse<OrderResponseDto>> UpdateOrderAsync(
+    Task<OrderResponseDto> UpdateOrderAsync(
         long orderId,
         OrderUpdateDto request,
         long updatedBy);
 
-    Task<ApiResponse<List<OrderResponseDto>>> GetUserOrdersAsync(
+    Task<List<OrderResponseDto>> GetUserOrdersAsync(
         long userId);
 }

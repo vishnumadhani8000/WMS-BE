@@ -5,7 +5,6 @@ using WMS.Application.Interfaces;
 using WMS.Shared.Response;
 
 namespace WMS.API.Controllers.Auth;
-
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
