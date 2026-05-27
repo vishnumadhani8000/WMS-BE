@@ -36,6 +36,7 @@ public class UserAddressService : IUserAddressService
             .Include(x => x.State)
             .Include(x => x.City)
             .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
         var response = _mapper.Map<
@@ -73,7 +74,6 @@ public class UserAddressService : IUserAddressService
         long userId,
         UserAddressRequestDto dto)
     {
-        // Validate State
         var stateExists = await _stateRepository
             .Query()
             .AnyAsync(x => x.Id == dto.StateId);
@@ -84,7 +84,6 @@ public class UserAddressService : IUserAddressService
                 .Failure("Invalid state id.");
         }
 
-        // Validate City belongs to State
         var city = await _cityRepository
             .Query()
             .FirstOrDefaultAsync(x =>

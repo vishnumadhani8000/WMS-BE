@@ -18,6 +18,7 @@ public class AutoMapperConfig : Profile
         CityMappings();
         CartMappings();
         UserAddressMappings();
+        OrderMappings();
     }
 
     private void ProductMappings()
@@ -162,6 +163,31 @@ public class AutoMapperConfig : Profile
             .ForMember(dest => dest.Orders,
                 opt => opt.Ignore());
     }
+
+    private void OrderMappings()
+{
+    CreateMap<OrderItem, OrderItemResponseDto>()
+        .ForMember(dest => dest.OrderItemId,
+            opt => opt.MapFrom(src => src.Id))
+        .ForMember(dest => dest.ProductName,
+            opt => opt.MapFrom(src => src.Product.Name));
+
+    CreateMap<Order, OrderResponseDto>()
+        .ForMember(dest => dest.OrderId,
+            opt => opt.MapFrom(src => src.Id))
+
+        .ForMember(dest => dest.Address,
+            opt => opt.MapFrom(src => src.Address))
+
+        .ForMember(dest => dest.CreatedAt,
+            opt => opt.MapFrom(src => src.CreatedAt))
+
+        .ForMember(dest => dest.Items,
+            opt => opt.MapFrom(src => src.OrderItems));
+        
+
+
+}
 
 
 }

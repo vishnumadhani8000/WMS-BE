@@ -52,7 +52,7 @@ public class ProductService : IProductService
             "stock" => requestDto.Ascending
                 ? query.OrderBy(x => x.Stock)
                 : query.OrderByDescending(x => x.Stock),
-            
+
             "price" => requestDto.Ascending
                 ? query.OrderBy(x => x.Price)
                 : query.OrderByDescending(x => x.Price),
@@ -189,12 +189,12 @@ public class ProductService : IProductService
         {
             requestDto.Search = requestDto.Search.Trim().ToLower();
 
+            var search = requestDto.Search.ToLower();
+
             query = query.Where(x =>
-                x.Name.ToLower().Contains(requestDto.Search) ||
-                (
-                    x.Description != null &&
-                    x.Description.ToLower().Contains(requestDto.Search)
-                )
+                x.Name.ToLower().Contains(search) ||
+                (x.Description != null &&
+                 x.Description.ToLower().Contains(search))
             );
         }
 

@@ -104,10 +104,19 @@ builder.Services.AddScoped<ICartService,CartService>();
 //-User-Address
 builder.Services.AddScoped<IUserAddressService,UserAddressService>();
 
+//--Order 
+builder.Services.AddScoped<IOrderService,OrderService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter()
+        );
+    });
 
 
 builder.Services.AddSwaggerGen(options =>
