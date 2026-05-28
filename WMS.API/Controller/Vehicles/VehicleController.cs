@@ -72,10 +72,7 @@ public class VehicleController : ControllerBase
             return Unauthorized();
         }
 
-        var vehicle = await _service.UpdateAsync(
-            id,
-            dto,
-            userId);
+        var vehicle = await _service.UpdateAsync(id,dto, userId);
 
         return Ok(
             ApiResponse<VehicleResponseDto>
@@ -85,8 +82,7 @@ public class VehicleController : ControllerBase
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
     {
-        var userIdClaim =
-            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
         {

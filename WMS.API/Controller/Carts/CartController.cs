@@ -26,57 +26,52 @@ public class CartController : ControllerBase
 
 
     [HttpPost("add")]
-public async Task<IActionResult> AddToCart(
-    [FromBody] AddToCartDto dto,
-    CancellationToken ct)
-{
-    var message = await _cartService
-        .AddToCartAsync(dto, UserId);
+    public async Task<IActionResult> AddToCart([FromBody] AddToCartDto dto, CancellationToken ct)
+    {
+        var message = await _cartService
+            .AddToCartAsync(dto, UserId);
 
-    return Ok(ApiResponse<string>.Success(message));
-}
+        return Ok(ApiResponse<string>.Success(message));
+    }
 
 
-   [HttpPut("items/{cartItemId}/quantity")]
-public async Task<IActionResult> UpdateQuantity(
-    long cartItemId,
-    [FromBody] UpdateCartItemQuantityDto dto,
-    CancellationToken ct)
-{
-    var message = await _cartService
-        .UpdateQuantityAsync(
-            cartItemId,
-            dto,
-            UserId);
+    [HttpPut("items/{cartItemId}/quantity")]
+    public async Task<IActionResult> UpdateQuantity(long cartItemId, [FromBody] UpdateCartItemQuantityDto dto, CancellationToken ct)
+    {
+        var message = await _cartService
+            .UpdateQuantityAsync(
+                cartItemId,
+                dto,
+                UserId);
 
-    return Ok(
-        ApiResponse<string>.Success(message)
-    );
-}
-   [HttpDelete("items/{cartItemId}")]
-public async Task<IActionResult> DeleteCartItem(
-    long cartItemId,
-    CancellationToken ct)
-{
-    var message = await _cartService
-        .DeleteCartItemAsync(
-            cartItemId,
-            UserId);
+        return Ok(
+            ApiResponse<string>.Success(message)
+        );
+    }
+    [HttpDelete("items/{cartItemId}")]
+    public async Task<IActionResult> DeleteCartItem(
+     long cartItemId,
+     CancellationToken ct)
+    {
+        var message = await _cartService
+            .DeleteCartItemAsync(
+                cartItemId,
+                UserId);
 
-    return Ok(
-        ApiResponse<string>.Success(message)
-    );
-}
+        return Ok(
+            ApiResponse<string>.Success(message)
+        );
+    }
 
     [HttpGet]
-public async Task<IActionResult> GetCart(
+    public async Task<IActionResult> GetCart(
     CancellationToken ct)
-{
-    var cart = await _cartService
-        .GetCartAsync(UserId);
+    {
+        var cart = await _cartService
+            .GetCartAsync(UserId);
 
-    return Ok(
-        ApiResponse<CartResponseDto>.Success(cart)
-    );
-}
+        return Ok(
+            ApiResponse<CartResponseDto>.Success(cart)
+        );
+    }
 }
