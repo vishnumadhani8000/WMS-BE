@@ -1,13 +1,10 @@
+
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-
 using WMS.Application.DTOs.Vehicles;
 using WMS.Application.Interfaces;
-
 using WMS.Domain.Common;
 using WMS.Domain.Entities;
-
-using WMS.Shared.Response;
 
 namespace WMS.Application.Services;
 
@@ -18,29 +15,28 @@ public class VehicleService : IVehicleService
 
     public VehicleService(
         ICommonRepository<Vehicle> repository,
-        IMapper mapper
-    )
+        IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<VehicleResponseDto>>> GetAllAsync(CommonFilterDto requestDto)
+    public async Task<PagedResult<VehicleResponseDto>> GetAllAsync(
+        CommonFilterDto requestDto)
     {
         IQueryable<Vehicle> query = _repository.Query();
 
-        // Search
         if (!string.IsNullOrWhiteSpace(requestDto.Search))
         {
-            requestDto.Search = requestDto.Search.Trim().ToLower();
+            requestDto.Search = requestDto.Search
+                .Trim()
+                .ToLower();
 
             query = query.Where(x =>
                 x.Name.ToLower().Contains(requestDto.Search) ||
-                x.PlateNumber.ToLower().Contains(requestDto.Search)
-            );
+                x.PlateNumber.ToLower().Contains(requestDto.Search));
         }
 
-        // Sorting
         query = requestDto.SortBy?.ToLower() switch
         {
             "name" => requestDto.Ascending
@@ -55,8 +51,9 @@ public class VehicleService : IVehicleService
                 ? query.OrderBy(x => x.PlateNumber)
                 : query.OrderByDescending(x => x.PlateNumber),
 
-            _ => query.OrderByDescending(x => x.CreatedAt),
+            _ => query.OrderByDescending(x => x.CreatedAt)
         };
+
         var totalCount = await query.CountAsync();
 
         var vehicles = await query
@@ -64,45 +61,32 @@ public class VehicleService : IVehicleService
             .Take(requestDto.PageSize)
             .ToListAsync();
 
-        var vehicleDtos =
-            _mapper.Map<List<VehicleResponseDto>>(vehicles);
-
-        var result = new PagedResult<VehicleResponseDto>
+        return new PagedResult<VehicleResponseDto>
         {
-            Items = vehicleDtos,
+            Items = _mapper.Map<List<VehicleResponseDto>>(vehicles),
             TotalCount = totalCount,
             PageNumber = requestDto.PageNumber,
-            PageSize = requestDto.PageSize,
+            PageSize = requestDto.PageSize
         };
-
-        return ApiResponse<PagedResult<VehicleResponseDto>>
-            .Success(result, "Vehicles fetched successfully.");
     }
 
-    public async Task<ApiResponse<VehicleResponseDto>> GetByIdAsync(
-        long id
-    )
+    public async Task<VehicleResponseDto> GetByIdAsync(long id)
     {
         var vehicle = await _repository.GetByIdAsync(id);
 
         if (vehicle == null)
         {
-            return ApiResponse<VehicleResponseDto>
-                .Failure("Vehicle not found.");
+            throw new KeyNotFoundException(
+                "Vehicle not found.");
         }
 
-        var response =
-            _mapper.Map<VehicleResponseDto>(vehicle);
-
-        return ApiResponse<VehicleResponseDto>
-            .Success(response, "Vehicle fetched successfully.");
+        return _mapper.Map<VehicleResponseDto>(vehicle);
     }
 
-    public async Task<ApiResponse<VehicleResponseDto>> CreateAsync(
-    VehicleRequestDto dto,
-    long userId)
+    public async Task<VehicleResponseDto> CreateAsync(
+        VehicleRequestDto dto,
+        long userId)
     {
-
         dto.PlateNumber = dto.PlateNumber
             .Trim()
             .Replace(" ", "")
@@ -113,15 +97,12 @@ public class VehicleService : IVehicleService
             .Query()
             .AnyAsync(x =>
                 x.PlateNumber.ToLower() ==
-                dto.PlateNumber.ToLower()
-            );
+                dto.PlateNumber.ToLower());
 
         if (exists)
         {
-            return ApiResponse<VehicleResponseDto>
-                .Failure(
-                    "Vehicle plate number already exists."
-                );
+            throw new ArgumentException(
+                "Vehicle plate number already exists.");
         }
 
         var vehicle = _mapper.Map<Vehicle>(dto);
@@ -130,23 +111,14 @@ public class VehicleService : IVehicleService
 
         await _repository.AddAsync(vehicle);
 
-        var response =
-            _mapper.Map<VehicleResponseDto>(vehicle);
-
-        return ApiResponse<VehicleResponseDto>
-            .Success(
-                response,
-                "Vehicle created successfully."
-            );
+        return _mapper.Map<VehicleResponseDto>(vehicle);
     }
 
-    public async Task<ApiResponse<VehicleResponseDto>> UpdateAsync(
-     long id,
-     VehicleRequestDto dto,
-     long userId
- )
+    public async Task<VehicleResponseDto> UpdateAsync(
+        long id,
+        VehicleRequestDto dto,
+        long userId)
     {
-        // Normalize plate number
         dto.PlateNumber = dto.PlateNumber
             .Trim()
             .Replace(" ", "")
@@ -157,8 +129,8 @@ public class VehicleService : IVehicleService
 
         if (vehicle == null)
         {
-            return ApiResponse<VehicleResponseDto>
-                .Failure("Vehicle not found.");
+            throw new KeyNotFoundException(
+                "Vehicle not found.");
         }
 
         var exists = await _repository
@@ -166,13 +138,12 @@ public class VehicleService : IVehicleService
             .AnyAsync(x =>
                 x.Id != id &&
                 x.PlateNumber.ToLower() ==
-                dto.PlateNumber.ToLower()
-            );
+                dto.PlateNumber.ToLower());
 
         if (exists)
         {
-            return ApiResponse<VehicleResponseDto>
-                .Failure("Vehicle plate number already exists.");
+            throw new ArgumentException(
+                "Vehicle plate number already exists.");
         }
 
         _mapper.Map(dto, vehicle);
@@ -182,34 +153,25 @@ public class VehicleService : IVehicleService
 
         await _repository.UpdateAsync(vehicle);
 
-        var response =
-            _mapper.Map<VehicleResponseDto>(vehicle);
-
-        return ApiResponse<VehicleResponseDto>
-            .Success(
-                response,
-                "Vehicle updated successfully."
-            );
+        return _mapper.Map<VehicleResponseDto>(vehicle);
     }
-    public async Task<ApiResponse<object>> DeleteAsync(
-            long id,
-            long userId
-        )
+
+    public async Task DeleteAsync(
+        long id,
+        long userId)
     {
         var vehicle = await _repository.GetByIdAsync(id);
 
         if (vehicle == null)
         {
-            return ApiResponse<object>
-                .Failure("Vehicle not found.");
+            throw new KeyNotFoundException(
+                "Vehicle not found.");
         }
 
         vehicle.DeletedBy = userId;
         vehicle.DeletedAt = DateTime.UtcNow;
 
         await _repository.SoftDeleteAsync(vehicle);
-
-        return ApiResponse<object>
-            .Success("Vehicle deleted successfully.");
     }
 }
+

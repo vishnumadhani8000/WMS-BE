@@ -24,7 +24,7 @@ public class CityService : ICityService
         _stateRepository = stateRepository;
     }
 
-    public async Task<ApiResponse<PagedResult<CityResponseDTO>>> GetAllAsync(CityFilterRequestDTO requestDTO)
+    public async Task<PagedResult<CityResponseDTO>> GetAllAsync(CityFilterRequestDTO requestDTO)
     {
         IQueryable<City> query = _repository
             .Query().
@@ -36,14 +36,13 @@ public class CityService : ICityService
             query = query.Where(x =>
                 x.Name.ToLower().Contains(requestDTO.Search)
             );
-            
+
         }
         var stateExists = await _stateRepository
             .ExistsAsync(x => x.Id == requestDTO.stateId);
-        if(!stateExists)
+        if (!stateExists)
         {
-            return ApiResponse<PagedResult<CityResponseDTO>>
-                .Failure("State not found.");
+            throw new KeyNotFoundException("State not found.");
         }
         query = requestDTO.SortBy?.ToLower() switch
         {
@@ -69,61 +68,49 @@ public class CityService : ICityService
             PageSize = requestDTO.PageSize,
         };
 
-        return ApiResponse<PagedResult<CityResponseDTO>>
-            .Success(result, "Citiess fetched successfully.");
+        return result;
     }
 
-    public async Task<ApiResponse<CityResponseDTO>> GetByIdAsync(long id)
+    public async Task<CityResponseDTO> GetByIdAsync(long id)
     {
         var city = await _repository
             .Query()
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (city == null)
-            return ApiResponse<CityResponseDTO>
-                .Failure("City not found.");
+            throw new KeyNotFoundException("City not found");
 
-        var response = _mapper.Map<CityResponseDTO>(city);
+        return _mapper.Map<CityResponseDTO>(city);
 
-        return ApiResponse<CityResponseDTO>
-            .Success(response, "City fetched successfully.");
+
     }
 
-    public async Task<ApiResponse<bool>> CreateAsync(
+    public async Task CreateAsync(
         CityRequestDTO dto,
         long createdBy)
     {
         dto.Name = dto.Name.Trim();
 
-
         var stateExists = await _stateRepository
             .ExistsAsync(x => x.Id == dto.StateId);
 
-
-        if(!stateExists)
-            return ApiResponse<bool>
-                .Failure("State not found.");
+        if (!stateExists)
+            throw new KeyNotFoundException("State not found");
 
         var exists = await _repository.ExistsAsync(
-             x => x.Name.ToLower() == dto.Name.ToLower());
+            x => x.Name.ToLower() == dto.Name.ToLower());
 
         if (exists)
-            return ApiResponse<bool>
-                .Failure("City with this name already exists.");
+            throw new ArgumentException(
+                "City with this name already exists.");
 
         var city = _mapper.Map<City>(dto);
         city.CreatedBy = createdBy;
 
         await _repository.AddAsync(city);
-
-        return ApiResponse<bool>
-            .Success(true, "City created successfully.");
     }
 
-    public async Task<ApiResponse<bool>> UpdateAsync(
-        long id,
-        CityRequestDTO dto,
-        long updatedBy)
+    public async Task UpdateAsync(long id, CityRequestDTO dto, long updatedBy)
     {
         dto.Name = dto.Name.Trim();
 
@@ -132,73 +119,53 @@ public class CityService : ICityService
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (city == null)
-            return ApiResponse<bool>
-                .Failure("City not found.");
+            throw new KeyNotFoundException("City not found.");
 
         var duplicate = await _repository
             .Query()
             .AnyAsync(x =>
                 x.Id != id &&
-                x.Name.ToLower() == dto.Name.ToLower()
-            );
+                x.Name.ToLower() == dto.Name.ToLower());
 
         if (duplicate)
-            return ApiResponse<bool>
-                .Failure("Another city with this name already exists.");
+            throw new ArgumentException(
+                "Another city with this name already exists.");
 
         city.Name = dto.Name;
         city.UpdatedBy = updatedBy;
         city.UpdatedAt = DateTime.UtcNow;
 
         await _repository.UpdateAsync(city);
-
-        return ApiResponse<bool>
-            .Success(true, "City updated successfully.");
     }
-
-    public async Task<ApiResponse<bool>> DeleteAsync(
-        long id,
-        long deletedBy)
+    public async Task DeleteAsync(long id, long deletedBy)
     {
         var city = await _repository
             .Query()
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (city == null)
-            return ApiResponse<bool>
-                .Failure("City not found.");
+            throw new KeyNotFoundException("City not found.");
 
         city.DeletedBy = deletedBy;
         city.DeletedAt = DateTime.UtcNow;
 
         await _repository.SoftDeleteAsync(city);
-
-        return ApiResponse<bool>
-            .Success(true, "City deleted successfully.");
     }
-    public async Task<ApiResponse<List<CityResponseDTO>>> 
-    GetCitiesByStateAsync(long stateId)
-{
-    var stateExists = await _stateRepository
-        .ExistsAsync(x => x.Id == stateId);
-
-    if (!stateExists)
+    public async Task<List<CityResponseDTO>> GetCitiesByStateAsync(long stateId)
     {
-        return ApiResponse<List<CityResponseDTO>>
-            .Failure("State not found.");
+        var stateExists = await _stateRepository
+            .ExistsAsync(x => x.Id == stateId);
+
+        if (!stateExists)
+            throw new KeyNotFoundException("State not found.");
+
+        var cities = await _repository
+            .Query()
+            .Where(x => x.StateId == stateId)
+            .OrderBy(x => x.Name)
+            .ToListAsync();
+
+        return _mapper.Map<List<CityResponseDTO>>(cities);
     }
 
-    var cities = await _repository
-        .Query()
-        .Where(x => x.StateId == stateId)
-        .OrderBy(x => x.Name)
-        .ToListAsync();
-
-    var response = _mapper.Map<List<CityResponseDTO>>(cities);
-
-    return ApiResponse<List<CityResponseDTO>>
-        .Success(response, "Cities fetched successfully.");
-}
-
- 
 }

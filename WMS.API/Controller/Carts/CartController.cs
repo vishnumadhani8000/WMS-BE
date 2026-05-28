@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.DTOs.Carts;
 using WMS.Application.Interfaces;
+using WMS.Shared.Response;
 namespace WMS.API.Controllers;
 
 [ApiController]
@@ -25,74 +26,52 @@ public class CartController : ControllerBase
 
 
     [HttpPost("add")]
-    public async Task<IActionResult> AddToCart(
-        [FromBody] AddToCartDto dto,
-        CancellationToken ct)
+    public async Task<IActionResult> AddToCart([FromBody] AddToCartDto dto, CancellationToken ct)
     {
-        var response = await _cartService
-            .AddToCartAsync(
-                dto,
-                UserId);
+        var message = await _cartService
+            .AddToCartAsync(dto, UserId);
 
-        if (!response.IsSuccess)
-        {
-            return BadRequest(response);
-        }
-
-        return Ok(response);
+        return Ok(ApiResponse<string>.Success(message));
     }
 
 
     [HttpPut("items/{cartItemId}/quantity")]
-    public async Task<IActionResult> UpdateQuantity(
-        long cartItemId,
-        [FromBody] UpdateCartItemQuantityDto dto,
-        CancellationToken ct)
+    public async Task<IActionResult> UpdateQuantity(long cartItemId, [FromBody] UpdateCartItemQuantityDto dto, CancellationToken ct)
     {
-        var response = await _cartService
+        var message = await _cartService
             .UpdateQuantityAsync(
                 cartItemId,
                 dto,
                 UserId);
 
-        if (!response.IsSuccess)
-        {
-            return BadRequest(response);
-        }
-
-        return Ok(response);
+        return Ok(
+            ApiResponse<string>.Success(message)
+        );
     }
-
     [HttpDelete("items/{cartItemId}")]
     public async Task<IActionResult> DeleteCartItem(
-        long cartItemId,
-        CancellationToken ct)
+     long cartItemId,
+     CancellationToken ct)
     {
-        var response = await _cartService
+        var message = await _cartService
             .DeleteCartItemAsync(
                 cartItemId,
                 UserId);
 
-        if (!response.IsSuccess)
-        {
-            return BadRequest(response);
-        }
-
-        return Ok(response);
+        return Ok(
+            ApiResponse<string>.Success(message)
+        );
     }
 
     [HttpGet]
     public async Task<IActionResult> GetCart(
-        CancellationToken ct)
+    CancellationToken ct)
     {
-        var response = await _cartService
+        var cart = await _cartService
             .GetCartAsync(UserId);
 
-        if (!response.IsSuccess)
-        {
-            return BadRequest(response);
-        }
-
-        return Ok(response);
+        return Ok(
+            ApiResponse<CartResponseDto>.Success(cart)
+        );
     }
 }

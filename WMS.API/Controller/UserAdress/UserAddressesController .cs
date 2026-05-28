@@ -1,8 +1,10 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WMS.Application.DTOs.UserAddresses;
 using WMS.Application.Services;
+using WMS.Shared.Response;
 
 namespace WMS.API.Controllers;
 
@@ -21,53 +23,68 @@ public class UserAddressesController : ControllerBase
 
     private long UserId =>
         Convert.ToInt64(
-            User.FindFirstValue(ClaimTypes.NameIdentifier));
+            User.FindFirstValue(
+                ClaimTypes.NameIdentifier));
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _service
+        var addresses = await _service
             .GetUserAddressesAsync(UserId);
 
-        return Ok(result);
+        return Ok(
+            ApiResponse<IEnumerable<UserAddressResponseDto>>
+                .Success(addresses));
     }
 
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id)
     {
-        var result = await _service
+        var address = await _service
             .GetByIdAsync(id, UserId);
 
-        return Ok(result);
+        return Ok(
+            ApiResponse<UserAddressResponseDto>
+                .Success(address));
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(
-        UserAddressRequestDto dto)
+        [FromBody] UserAddressRequestDto dto)
     {
-        var result = await _service
+        var address = await _service
             .CreateAsync(UserId, dto);
 
-        return Ok(result);
+        return Ok(
+            ApiResponse<UserAddressResponseDto>
+                .Success(
+                    address,
+                    "Address created successfully."));
     }
 
     [HttpPut("{id:long}")]
     public async Task<IActionResult> Update(
         long id,
-        UserAddressRequestDto dto)
+        [FromBody] UserAddressRequestDto dto)
     {
-        var result = await _service
+        await _service
             .UpdateAsync(id, UserId, dto);
 
-        return Ok(result);
+        return Ok(
+            ApiResponse<bool>
+                .Success(
+                    "Address updated successfully."));
     }
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
     {
-        var result = await _service
+        await _service
             .DeleteAsync(id, UserId);
 
-        return Ok(result);
+        return Ok(
+            ApiResponse<bool>
+                .Success(
+                    "Address deleted successfully."));
     }
 }

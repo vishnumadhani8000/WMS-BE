@@ -1,11 +1,11 @@
-using System.Security.AccessControl;
+
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using WMS.Application.DTOs.Vehicles;
 using WMS.Application.Interfaces;
 using WMS.Domain.Common;
+using WMS.Shared.Response;
 
 namespace WMS.API.Controllers;
 
@@ -22,27 +22,27 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] CommonFilterDto filterDto )
+    public async Task<IActionResult> GetAll([FromQuery] CommonFilterDto filterDto)
     {
-        var result = await _service.GetAllAsync(filterDto);
+        var vehicles = await _service.GetAllAsync(filterDto);
 
-        return result.IsSuccess
-            ? Ok(result)
-            : BadRequest(result);
+        return Ok(
+            ApiResponse<PagedResult<VehicleResponseDto>>
+                .Success(vehicles, "Vehicles fetched successfully."));
     }
 
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id)
     {
-        var result = await _service.GetByIdAsync(id);
+        var vehicle = await _service.GetByIdAsync(id);
 
-        return result.IsSuccess
-            ? Ok(result)
-            : NotFound(result);
+        return Ok(
+            ApiResponse<VehicleResponseDto>
+                .Success(vehicle, "Vehicle fetched successfully."));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(VehicleRequestDto dto)
+    public async Task<IActionResult> Create( [FromBody] VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -52,18 +52,17 @@ public class VehicleController : ControllerBase
             return Unauthorized();
         }
 
-        var result = await _service.CreateAsync(
+        var vehicle = await _service.CreateAsync(
             dto,
-            userId
-        );
+            userId);
 
-        return result.IsSuccess
-            ? Ok(result)
-            : BadRequest(result);
+        return Ok(
+            ApiResponse<VehicleResponseDto>
+                .Success(vehicle, "Vehicle created successfully."));
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update( long id, VehicleRequestDto dto)
+    public async Task<IActionResult> Update(long id,[FromBody] VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -73,34 +72,30 @@ public class VehicleController : ControllerBase
             return Unauthorized();
         }
 
-        var result = await _service.UpdateAsync(
-            id,
-            dto,
-            userId
-        );
+        var vehicle = await _service.UpdateAsync(id,dto, userId);
 
-        return result.IsSuccess
-            ? Ok(result)
-            : NotFound(result);
+        return Ok(
+            ApiResponse<VehicleResponseDto>
+                .Success(vehicle, "Vehicle updated successfully."));
     }
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
 
-        var result = await _service.DeleteAsync(
+        await _service.DeleteAsync(
             id,
-            userId
-        );
+            userId);
 
-        return result.IsSuccess
-            ? Ok(result)
-            : NotFound(result);
+        return Ok(
+            ApiResponse<object>
+                .Success("Vehicle deleted successfully."));
     }
 }
+

@@ -6,10 +6,10 @@ namespace WMS.Application.Interfaces;
 
 public interface IStateService
 {
-    Task<ApiResponse<StateResponseDTO>>              GetByIdAsync(long id);
-    Task<ApiResponse<PagedResult<StateResponseDTO>>> GetAllAsync(CommonFilterDto requestDTO);
-    Task<ApiResponse<List<StateResponseDTO>>> GetAllStatesAsync();
-    Task<ApiResponse<bool>>                          CreateAsync(StateRequestDTO dto, long createdBy);
-    Task<ApiResponse<bool>>                          UpdateAsync(long id, StateRequestDTO dto, long updatedBy);
-    Task<ApiResponse<bool>>                          DeleteAsync(long id, long deletedBy);
+    Task<StateResponseDTO>              GetByIdAsync(long id);
+    Task<PagedResult<StateResponseDTO>> GetAllAsync(CommonFilterDto requestDTO);
+    Task<List<StateResponseDTO>>        GetAllStatesAsync();
+    Task                                  CreateAsync(StateRequestDTO dto, long createdBy);
+    Task                                   UpdateAsync(long id, StateRequestDTO dto, long updatedBy);
+    Task                                    DeleteAsync(long id, long deletedBy);
 }

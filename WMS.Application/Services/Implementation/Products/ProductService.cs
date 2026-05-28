@@ -21,14 +21,13 @@ public class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PagedResult<BaseProductDto>>> GetAllAsync(CommonFilterDto requestDto)
+    public async Task<PagedResult<BaseProductDto>> GetAllAsync(CommonFilterDto requestDto)
     {
         IQueryable<Product> query = _repository.Query();
 
         if (!string.IsNullOrWhiteSpace(requestDto.Search))
         {
             requestDto.Search = requestDto.Search.Trim().ToLower();
-
             query = query.Where(x =>
                 x.Name.ToLower().Contains(requestDto.Search) ||
                 (
@@ -52,7 +51,7 @@ public class ProductService : IProductService
             "stock" => requestDto.Ascending
                 ? query.OrderBy(x => x.Stock)
                 : query.OrderByDescending(x => x.Stock),
-            
+
             "price" => requestDto.Ascending
                 ? query.OrderBy(x => x.Price)
                 : query.OrderByDescending(x => x.Price),
@@ -79,33 +78,21 @@ public class ProductService : IProductService
             PageSize = requestDto.PageSize,
         };
 
-        return ApiResponse<PagedResult<BaseProductDto>>
-            .Success(
-                result,
-                "Products fetched successfully."
-            );
+            return result;
     }
 
-    public async Task<ApiResponse<BaseProductDto>> GetByIdAsync(long id)
+    public async Task<BaseProductDto> GetByIdAsync(long id)
     {
         var product = await _repository.GetByIdAsync(id);
+
         if (product == null)
         {
-            return ApiResponse<BaseProductDto>
-                .Failure("Product not found.");
+            throw new KeyNotFoundException("Product not found.");
         }
 
-        var response =
-            _mapper.Map<BaseProductDto>(product);
-
-        return ApiResponse<BaseProductDto>
-            .Success(
-                response,
-                "Product fetched successfully."
-            );
+        return _mapper.Map<BaseProductDto>(product);
     }
-
-    public async Task<ApiResponse<BaseProductDto>> CreateAsync(BaseProductDto dto, long userId)
+    public async Task<BaseProductDto> CreateAsync(BaseProductDto dto, long userId)
     {
         var product = _mapper.Map<Product>(dto);
 
@@ -113,36 +100,23 @@ public class ProductService : IProductService
 
         await _repository.AddAsync(product);
 
-        var response =
-            _mapper.Map<BaseProductDto>(product);
-
-        return ApiResponse<BaseProductDto>
-            .Success(
-                response,
-                "Product created successfully."
-            );
+        return _mapper.Map<BaseProductDto>(product);
     }
 
-    public async Task<ApiResponse<BaseProductDto>> UpdateAsync(BaseProductDto dto, long userId)
+    public async Task<BaseProductDto> UpdateAsync(BaseProductDto dto, long userId)
     {
-
         if (!dto.Id.HasValue)
         {
-            return ApiResponse<BaseProductDto>
-                .Failure("Product id is required.");
+            throw new ArgumentException("Product id is required.");
         }
 
         var product = await _repository.GetByIdAsync(dto.Id.Value);
 
-
-
         if (product == null)
         {
-            return ApiResponse<BaseProductDto>
-                .Failure("Product not found.");
+            throw new KeyNotFoundException("Product not found.");
         }
 
-        // ── Update existing entity ─────────────
         _mapper.Map(dto, product);
 
         product.UpdatedBy = userId;
@@ -150,36 +124,24 @@ public class ProductService : IProductService
 
         await _repository.UpdateAsync(product);
 
-        var response =
-            _mapper.Map<BaseProductDto>(product);
-
-        return ApiResponse<BaseProductDto>
-            .Success(
-                response,
-                "Product updated successfully."
-            );
+        return _mapper.Map<BaseProductDto>(product);
     }
 
-    public async Task<ApiResponse<object>> DeleteAsync(long id, long userId)
+    public async Task DeleteAsync(long id, long userId)
     {
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
         {
-            return ApiResponse<object>
-                .Failure("Product not found.");
+            throw new KeyNotFoundException("Product not found.");
         }
 
         product.DeletedBy = userId;
         product.DeletedAt = DateTime.UtcNow;
 
         await _repository.SoftDeleteAsync(product);
-
-        return ApiResponse<object>
-            .Success("Product deleted successfully.");
     }
-
-    public async Task<ApiResponse<PagedResult<ProductResponseCustomerDto>>> GetAllForCustomerAsync(CommonFilterDto requestDto)
+    public async Task<PagedResult<ProductResponseCustomerDto>> GetAllForCustomerAsync(CommonFilterDto requestDto)
     {
         IQueryable<Product> query = _repository.Query();
 
@@ -189,12 +151,12 @@ public class ProductService : IProductService
         {
             requestDto.Search = requestDto.Search.Trim().ToLower();
 
+            var search = requestDto.Search.ToLower();
+
             query = query.Where(x =>
-                x.Name.ToLower().Contains(requestDto.Search) ||
-                (
-                    x.Description != null &&
-                    x.Description.ToLower().Contains(requestDto.Search)
-                )
+                x.Name.ToLower().Contains(search) ||
+                (x.Description != null &&
+                 x.Description.ToLower().Contains(search))
             );
         }
 
@@ -235,10 +197,6 @@ public class ProductService : IProductService
             PageSize = requestDto.PageSize,
         };
 
-        return ApiResponse<PagedResult<ProductResponseCustomerDto>>
-            .Success(
-                result,
-                "Products fetched successfully."
-            );
+        return result;
     }
 }
