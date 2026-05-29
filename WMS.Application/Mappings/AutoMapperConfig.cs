@@ -1,5 +1,6 @@
 using AutoMapper;
 using WMS.Application.DTOs.Carts;
+using WMS.Application.DTOs.Drivers;
 using WMS.Application.DTOs.Products;
 using WMS.Application.DTOs.State;
 using WMS.Application.DTOs.UserAddresses;
@@ -19,13 +20,14 @@ public class AutoMapperConfig : Profile
         CartMappings();
         UserAddressMappings();
         OrderMappings();
+        DriverMappings();
     }
 
     private void ProductMappings()
     {
 
         CreateMap<Product, BaseProductDto>();
-        CreateMap<Product,ProductResponseCustomerDto>();
+        CreateMap<Product, ProductResponseCustomerDto>();
 
 
         CreateMap<BaseProductDto, Product>()
@@ -141,7 +143,7 @@ public class AutoMapperConfig : Profile
                 opt => opt.Ignore())
 
             .ForMember(dest => dest.IsDefault,
-            opt=>opt.Ignore())
+            opt => opt.Ignore())
             .ForMember(dest => dest.CreatedAt,
                 opt => opt.Ignore())
             .ForMember(dest => dest.CreatedBy,
@@ -165,29 +167,47 @@ public class AutoMapperConfig : Profile
     }
 
     private void OrderMappings()
-{
-    CreateMap<OrderItem, OrderItemResponseDto>()
-        .ForMember(dest => dest.OrderItemId,
-            opt => opt.MapFrom(src => src.Id))
-        .ForMember(dest => dest.ProductName,
-            opt => opt.MapFrom(src => src.Product.Name));
+    {
+        CreateMap<OrderItem, OrderItemResponseDto>()
+            .ForMember(dest => dest.OrderItemId,
+                opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ProductName,
+                opt => opt.MapFrom(src => src.Product.Name));
 
-    CreateMap<Order, OrderResponseDto>()
-        .ForMember(dest => dest.OrderId,
-            opt => opt.MapFrom(src => src.Id))
+        CreateMap<Order, OrderResponseDto>()
+            .ForMember(dest => dest.OrderId,
+                opt => opt.MapFrom(src => src.Id))
 
-        .ForMember(dest => dest.Address,
-            opt => opt.MapFrom(src => src.Address))
+            .ForMember(dest => dest.Address,
+                opt => opt.MapFrom(src => src.Address))
 
-        .ForMember(dest => dest.CreatedAt,
-            opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.CreatedAt,
+                opt => opt.MapFrom(src => src.CreatedAt))
 
-        .ForMember(dest => dest.Items,
-            opt => opt.MapFrom(src => src.OrderItems));
-        
+            .ForMember(dest => dest.Items,
+                opt => opt.MapFrom(src => src.OrderItems));
 
 
-}
+
+    }
+    private void DriverMappings()
+    {
+        CreateMap<Driver, DriverResponseDto>();
+
+        CreateMap<DriverRequestDto, Driver>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedByUser, opt => opt.Ignore())
+            .ForMember(dest => dest.Shipments, opt => opt.Ignore());
+    }
 
 
 }

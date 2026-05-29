@@ -104,6 +104,10 @@ builder.Services.AddScoped<ICartService,CartService>();
 //-User-Address
 builder.Services.AddScoped<IUserAddressService,UserAddressService>();
 
+//-Driver-Management 
+
+builder.Services.AddScoped<IDriverService,DriverService>();
+
 //--Order 
 builder.Services.AddScoped<IOrderService,OrderService>();
 

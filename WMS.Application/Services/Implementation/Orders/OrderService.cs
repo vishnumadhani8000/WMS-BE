@@ -161,6 +161,7 @@ public class OrderService : IOrderService
 {
     var orders = await _orderRepository
         .Query()
+        .IgnoreQueryFilters()
         .Include(x => x.Address)
             .ThenInclude(x => x.State)
 
@@ -169,7 +170,6 @@ public class OrderService : IOrderService
 
         .Include(x => x.OrderItems)
             .ThenInclude(x => x.Product)
-
         .Where(x => x.UserId == userId)
         .OrderByDescending(x => x.CreatedAt)
         .ToListAsync();
