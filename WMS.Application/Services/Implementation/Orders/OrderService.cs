@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using WMS.Application.DTOs.Order;
 using WMS.Application.Interfaces;
+using WMS.Domain.Common;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
 using WMS.Shared.Response;
@@ -37,11 +39,10 @@ public class OrderService : IOrderService
             .FirstOrDefaultAsync(
                 x => x.Id == request.CartId
                 && x.UserId == userId
-                && !x.IsDeleted
                 && !x.IsCheckOut);
 
         if (cart == null)
-        {  
+        {
             throw new KeyNotFoundException("Cart not found.");
 
         }
@@ -49,7 +50,7 @@ public class OrderService : IOrderService
         if (cart.IsCheckOut)
         {
             throw new ArgumentException("Cart already checked out.");
-            
+
         }
 
         if (!cart.CartItems.Any())
@@ -68,19 +69,19 @@ public class OrderService : IOrderService
             if (item.Quantity <= 0)
             {
                 throw new ArgumentException($"Invalid quantity for product {item.Product.Name}.");
-          
+
             }
 
             if (item.Product.Stock <= 0)
             {
-                throw new ArgumentException( $"{item.Product.Name} is out of stock.");
-                
-            }   
+                throw new ArgumentException($"{item.Product.Name} is out of stock.");
+
+            }
 
             if (item.Quantity > item.Product.Stock)
             {
-                throw new ArgumentException( $"Only {item.Product.Stock} quantity available for {item.Product.Name}.");
-               
+                throw new ArgumentException($"Only {item.Product.Stock} quantity available for {item.Product.Name}.");
+
             }
         }
 
@@ -118,7 +119,7 @@ public class OrderService : IOrderService
 
         foreach (var item in cart.CartItems)
         {
-           item.Product.Stock -= item.Quantity;
+            item.Product.Stock -= item.Quantity;
         }
 
         await _productRepository.UpdateRangeAsync(
@@ -126,8 +127,8 @@ public class OrderService : IOrderService
         cart.IsCheckOut = true;
         await _cartRepository.UpdateAsync(cart);
 
-       
-            return "Order created successfully.";
+
+        return "Order created successfully.";
     }
 
     public async Task<OrderResponseDto> UpdateOrderAsync(
@@ -153,29 +154,160 @@ public class OrderService : IOrderService
         await _orderRepository.UpdateAsync(order);
         return _mapper.Map<OrderResponseDto>(order);
 
-       
+
     }
 
     public async Task<List<OrderResponseDto>> GetUserOrdersAsync(
     long userId)
-{
-    var orders = await _orderRepository
-        .Query()
-        .IgnoreQueryFilters()
-        .Include(x => x.Address)
-            .ThenInclude(x => x.State)
+    {
+        var orders = await _orderRepository
+            .Query()
+            .IgnoreQueryFilters()
+            .Include(x => x.Address)
+                .ThenInclude(x => x.State)
 
-        .Include(x => x.Address)
-            .ThenInclude(x => x.City)
+            .Include(x => x.Address)
+                .ThenInclude(x => x.City)
 
-        .Include(x => x.OrderItems)
-            .ThenInclude(x => x.Product)
-        .Where(x => x.UserId == userId)
-        .OrderByDescending(x => x.CreatedAt)
-        .ToListAsync();
+            .Include(x => x.OrderItems)
+                .ThenInclude(x => x.Product)
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
 
-    return _mapper.Map<List<OrderResponseDto>>(orders);
+        return _mapper.Map<List<OrderResponseDto>>(orders);
+    }
 
- 
-}
+    public async Task<PagedResult<AdminOrderResponseDto>> GetAllOrdersAsync(AdminOrderRequestDto request)
+    {
+        IQueryable<Order> query = _orderRepository
+            .Query()
+            .IgnoreQueryFilters()
+            .Include(x => x.User)
+            .Include(x => x.Address)
+                .ThenInclude(x => x.State)
+            .Include(x => x.Address)
+                .ThenInclude(x => x.City)
+            .Include(x => x.OrderItems);
+
+        if (request.OnlyPending == true)
+        {
+            query = query.Where(x =>
+                x.Status == OrderStatus.Pending);
+        }
+        if (request.onlypendingandaccepted == true)
+        {
+            query = query.Where(x =>
+                x.Status == OrderStatus.Pending ||
+                x.Status == OrderStatus.Accepted);
+        }
+        if (request.StateId.HasValue)
+        {
+            query = query.Where(x =>
+                x.Address.StateId == request.StateId.Value);
+        }
+
+        if (request.CityId.HasValue)
+        {
+            query = query.Where(x =>
+                x.Address.CityId == request.CityId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            request.Search = request.Search
+                .Trim()
+                .ToLower();
+
+            query = query.Where(x =>
+                x.User.Name.ToLower().Contains(request.Search)
+                ||
+                x.Id.ToString().Contains(request.Search));
+        }
+
+        query = request.SortBy?.ToLower() switch
+        {
+
+            "orderid" => request.Ascending
+               ? query.OrderBy(x => x.Id)
+               : query.OrderByDescending(x => x.Id),
+
+            "customername" => request.Ascending
+                ? query.OrderBy(x => x.User.Name)
+                : query.OrderByDescending(x => x.User.Name),
+
+            "createdat" => request.Ascending
+                ? query.OrderBy(x => x.CreatedAt)
+                : query.OrderByDescending(x => x.CreatedAt),
+
+            "totalprice" => request.Ascending
+                ? query.OrderBy(x => x.TotalPrice)
+                : query.OrderByDescending(x => x.TotalPrice),
+
+            "totalitems" => request.Ascending
+                ? query.OrderBy(x => x.OrderItems.Sum(i => i.Quantity))
+                : query.OrderByDescending(x => x.OrderItems.Sum(i => i.Quantity)),
+
+            "totalweightkg" => request.Ascending
+                ? query.OrderBy(x => x.TotalWeightKg)
+                : query.OrderByDescending(x => x.TotalWeightKg),
+
+            "cityname" => request.Ascending
+                ? query.OrderBy(x => x.Address.City)
+                : query.OrderByDescending(x => x.Address.City),
+
+            "statename" => request.Ascending
+                ? query.OrderBy(x => x.Address.State)
+                : query.OrderByDescending(x => x.Address.State),
+
+
+            _ => query.OrderByDescending(x => x.CreatedAt)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var orders = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<AdminOrderResponseDto>
+        {
+            Items = _mapper.Map<List<AdminOrderResponseDto>>(orders),
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize
+        };
+    }
+
+    public async Task<AdminOrderDetailResponseDto>
+        GetOrderByIdAsync(long orderId)
+    {
+        var order = await _orderRepository
+            .Query()
+            .IgnoreQueryFilters()
+            .Include(x => x.User)
+
+            .Include(x => x.Address)
+                .ThenInclude(x => x.State)
+
+            .Include(x => x.Address)
+                .ThenInclude(x => x.City)
+
+            .Include(x => x.OrderItems)
+                .ThenInclude(x => x.Product)
+
+            .FirstOrDefaultAsync(x =>
+                x.Id == orderId);
+
+        if (order == null)
+        {
+            throw new KeyNotFoundException(
+                "Order not found.");
+        }
+
+        return _mapper.Map<AdminOrderDetailResponseDto>(
+            order);
+    }
+
 }

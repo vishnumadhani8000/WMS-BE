@@ -48,6 +48,10 @@ public class DriverService : IDriverService
                 ? query.OrderBy(x => x.Phone)
                 : query.OrderByDescending(x => x.Phone),
 
+            "licenceno" => requestDto.Ascending
+                ? query.OrderBy(x => x.LicenceNo)
+                : query.OrderByDescending(x => x.LicenceNo),
+
             _ => query.OrderByDescending(x => x.CreatedAt)
         };
 
@@ -187,4 +191,21 @@ public class DriverService : IDriverService
 
         await _repository.SoftDeleteAsync(driver);
     }
+    public async Task<List<AvailableDriversDto>>GetAvailableDriversAsync()
+    {
+        var drivers = await _repository.Query()
+            .Where(x => x.IsAvailable)
+            .OrderBy(x => x.Name)
+            .ToListAsync();
+
+        if (!drivers.Any())
+        {
+            throw new KeyNotFoundException(
+                "No drivers available.");
+        }
+
+        return _mapper.Map<List<AvailableDriversDto>>(drivers);
+    }
+
+  
 }

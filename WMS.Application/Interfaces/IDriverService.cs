@@ -23,4 +23,6 @@ public interface IDriverService
     Task DeleteAsync(
         long id,
         long userId);
+
+    Task<List<AvailableDriversDto>> GetAvailableDriversAsync();
 }

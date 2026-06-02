@@ -23,4 +23,5 @@ public interface IVehicleService
         long id,
         long userId
     );
+    Task<List<AvailableVehicleDto>>GetAvailableVehiclesAsync(decimal totalWeightKg);
 }

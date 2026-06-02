@@ -113,4 +113,16 @@ public class DriverController : ControllerBase
                 .Success(
                     "Driver deleted successfully."));
     }
+    [HttpGet("available")]
+    public async Task<IActionResult> GetAvailableDrivers()
+    {
+        var drivers =
+            await _service.GetAvailableDriversAsync();
+
+        return Ok(
+            ApiResponse<List<AvailableDriversDto>>
+                .Success(
+                    drivers,
+                    "Available drivers fetched successfully."));
+    }
 }
