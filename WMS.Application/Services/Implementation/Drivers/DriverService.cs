@@ -186,6 +186,12 @@ public class DriverService : IDriverService
                 "Driver not found.");
         }
 
+        if(driver.IsAvailable == false)
+        {
+            throw new ArgumentException(
+                "Cannot delete the driver because they are currently assigned to a shipment.");
+        }
+
         driver.DeletedBy = userId;
         driver.DeletedAt = DateTime.UtcNow;
 

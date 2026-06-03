@@ -78,6 +78,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
 
 //--- CommonRepository
 builder.Services.AddScoped(typeof(ICommonRepository<>), typeof(CommonRepository<>));
+//--UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //---Auth Service
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -110,6 +112,9 @@ builder.Services.AddScoped<IDriverService,DriverService>();
 
 //--Order 
 builder.Services.AddScoped<IOrderService,OrderService>();
+
+//- Shipment
+builder.Services.AddScoped<IShipmentService,ShipmentService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

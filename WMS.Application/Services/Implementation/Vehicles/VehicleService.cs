@@ -162,10 +162,16 @@ public class VehicleService : IVehicleService
     {
         var vehicle = await _repository.GetByIdAsync(id);
 
+
         if (vehicle == null)
         {
             throw new KeyNotFoundException(
                 "Vehicle not found.");
+        }
+        if(vehicle.IsAvailable == false)
+        {
+            throw new InvalidOperationException(
+                "Vehicle is currently in use and cannot be deleted.");
         }
 
         vehicle.DeletedBy = userId;

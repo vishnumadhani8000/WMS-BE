@@ -16,7 +16,7 @@ public class AdminOrderDetailResponseDto
 
     public string StateName { get; set; } = string.Empty;
 
-    public string Pincode { get; set; } 
+    public string? Pincode { get; set; } 
 
     public decimal TotalPrice { get; set; }
 
