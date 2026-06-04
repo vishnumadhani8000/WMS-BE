@@ -162,16 +162,46 @@ public class VehicleService : IVehicleService
     {
         var vehicle = await _repository.GetByIdAsync(id);
 
+
         if (vehicle == null)
         {
             throw new KeyNotFoundException(
                 "Vehicle not found.");
+        }
+        if(vehicle.IsAvailable == false)
+        {
+            throw new InvalidOperationException(
+                "Vehicle is currently in use and cannot be deleted.");
         }
 
         vehicle.DeletedBy = userId;
         vehicle.DeletedAt = DateTime.UtcNow;
 
         await _repository.SoftDeleteAsync(vehicle);
+    }
+    public async Task<List<AvailableVehicleDto>>
+    GetAvailableVehiclesAsync(decimal totalWeightKg)
+    {
+        var vehicles = await _repository.Query()
+            .Where(x =>
+                x.IsAvailable &&
+                x.CapacityKg >= totalWeightKg)
+            .OrderBy(x => x.CapacityKg)
+            .ToListAsync();
+
+        if (!vehicles.Any())
+        {
+            var maxCapacity = await _repository.Query()
+                .Where(x => x.IsAvailable)
+                .MaxAsync(x => (decimal?)x.CapacityKg);
+
+            throw new ArgumentException(
+                maxCapacity == null
+                    ? "No vehicles available."
+                    : $"No available vehicle can carry {totalWeightKg} KG. Maximum available capacity is {maxCapacity} KG.");
+        }
+
+        return _mapper.Map<List<AvailableVehicleDto>>(vehicles);
     }
 }
 

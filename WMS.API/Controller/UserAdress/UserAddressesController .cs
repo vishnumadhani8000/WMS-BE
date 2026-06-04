@@ -72,7 +72,7 @@ public class UserAddressesController : ControllerBase
 
         return Ok(
             ApiResponse<bool>
-                .Success(
+                .Success(true,
                     "Address updated successfully."));
     }
 
@@ -84,7 +84,7 @@ public class UserAddressesController : ControllerBase
 
         return Ok(
             ApiResponse<bool>
-                .Success(
+                .Success(true,
                     "Address deleted successfully."));
     }
 }

@@ -5,7 +5,7 @@ namespace WMS.Application.DTOs.State;
 public class CityRequestDTO
 {
 
-    public long StateId { get; set; }
+    public long? StateId { get; set; }
     
     [Required]
     [StringLength(100, MinimumLength = 2)]

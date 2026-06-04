@@ -17,7 +17,6 @@ public class ShipmentConfiguration : IEntityTypeConfiguration<Shipment>
         builder.Property(x => x.TotalWeightKg) .IsRequired().HasColumnType("decimal(12,3)");
         builder.Property(x => x.DispatchedAt)  .IsRequired(false);
         builder.Property(x => x.DeliveredAt)   .IsRequired(false);
-        builder.Property(x => x.Notes)         .IsRequired(false);
         builder.Property(x => x.CreatedAt)     .IsRequired().HasDefaultValueSql("now()");
         builder.Property(x => x.DeletedAt)     .IsRequired(false);
         builder.Property(x => x.CreatedBy)     .IsRequired(false);

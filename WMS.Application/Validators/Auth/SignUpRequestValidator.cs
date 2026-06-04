@@ -25,8 +25,13 @@
                 .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
 
             RuleFor(x => x.Phone)
-                .MaximumLength(20).WithMessage("Phone must not exceed 20 characters.")
-                .Matches(@"^\+?[0-9]*$").WithMessage("Invalid phone number format.")
-                .When(x => x.Phone != null);
+                .NotEmpty()
+                .WithMessage("Phone number is required.")
+
+                .Matches(@"^\+?[1-9]\d{6,13}$")
+                .WithMessage("Phone number must be a valid mobile number.")
+
+                .MaximumLength(14)
+                .WithMessage("Phone number must not exceed 14 characters.");
         }
     }       

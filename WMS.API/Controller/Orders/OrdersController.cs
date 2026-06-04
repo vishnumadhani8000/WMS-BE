@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WMS.Application.DTOs.Order;
 using WMS.Application.Interfaces;
+using WMS.Domain.Common;
 using WMS.Shared.Response;
 
 namespace WMS.API.Controllers;
@@ -19,7 +21,7 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    private long UserId =>Convert.ToInt64( User.FindFirstValue( ClaimTypes.NameIdentifier));
+    private long UserId => Convert.ToInt64(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
     [HttpPost]
     public async Task<IActionResult> CreateOrder(
@@ -56,7 +58,7 @@ public class OrdersController : ControllerBase
         );
     }
 
-    [HttpGet]
+    [HttpGet("{my-orders}")]
     public async Task<IActionResult> GetUserOrders()
     {
         var orders = await _orderService
@@ -70,5 +72,29 @@ public class OrdersController : ControllerBase
             )
         );
     }
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetById(long id)
+    {
+        var order = await _orderService
+            .GetOrderByIdAsync(id);
+
+        return Ok(
+            ApiResponse<AdminOrderDetailResponseDto>
+                .Success(order));
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(
+    [FromQuery] AdminOrderRequestDto request)
+    {
+        var orders = await _orderService
+            .GetAllOrdersAsync(request);
+
+        return Ok(
+            ApiResponse<PagedResult<AdminOrderResponseDto>>
+                .Success(orders));
+    }
+
 }
 

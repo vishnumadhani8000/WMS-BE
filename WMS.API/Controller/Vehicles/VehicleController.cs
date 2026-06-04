@@ -42,7 +42,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create( [FromBody] VehicleRequestDto dto)
+    public async Task<IActionResult> Create([FromBody] VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -62,7 +62,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id,[FromBody] VehicleRequestDto dto)
+    public async Task<IActionResult> Update(long id, [FromBody] VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -72,7 +72,7 @@ public class VehicleController : ControllerBase
             return Unauthorized();
         }
 
-        var vehicle = await _service.UpdateAsync(id,dto, userId);
+        var vehicle = await _service.UpdateAsync(id, dto, userId);
 
         return Ok(
             ApiResponse<VehicleResponseDto>
@@ -82,7 +82,7 @@ public class VehicleController : ControllerBase
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id)
     {
-        var userIdClaim =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!long.TryParse(userIdClaim, out var userId))
         {
@@ -96,6 +96,19 @@ public class VehicleController : ControllerBase
         return Ok(
             ApiResponse<object>
                 .Success("Vehicle deleted successfully."));
+    }
+    [HttpGet("available")]
+    public async Task<IActionResult> GetAvailableVehicles(
+    [FromQuery] decimal totalWeightKg)
+    {
+        var vehicles =
+            await _service.GetAvailableVehiclesAsync(totalWeightKg);
+
+        return Ok(
+            ApiResponse<List<AvailableVehicleDto>>
+                .Success(
+                    vehicles,
+                    "Available vehicles fetched successfully."));
     }
 }
 

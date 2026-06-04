@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.DTOs.Auth;
@@ -120,6 +121,74 @@ public class AuthController : ControllerBase
                 "Account created successfully."
             )
         );
+    }
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var profile =
+            await _authService.GetProfileAsync(userId);
+
+        return Ok(
+            ApiResponse<UserProfileDto>
+                .Success(
+                    profile,
+                    "Profile fetched successfully."));
+    }
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile(
+        [FromBody] UpdateProfileRequestDto request)
+    {
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var profile =
+            await _authService.UpdateProfileAsync(
+                userId,
+                request);
+
+        return Ok(
+            ApiResponse<UserProfileDto>
+                .Success(
+                    profile,
+                    "Profile updated successfully."));
+    }
+    [Authorize]
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword(
+    [FromBody] ChangePasswordRequestDto request)
+    {
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        await _authService.ChangePasswordAsync(
+            userId,
+            request);
+
+        return Ok(
+            ApiResponse<object>
+                .Success(
+                    "Password updated successfully."));
     }
 
 }
