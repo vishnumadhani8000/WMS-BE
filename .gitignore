@@ -1,4 +1,33 @@
-bin
-obj
-.vs
+# Build folders
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code / Rider
+.vscode/
+.idea/
+
+# Environment files
 .env
+
+# ASP.NET launch settings
+launchSettings.json
+
+# Secrets / Certificates
+appsettings.Development.json
+*.pfx
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional: Ignore migrations
