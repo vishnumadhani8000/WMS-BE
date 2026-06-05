@@ -2,8 +2,8 @@ namespace WMS.Domain.Enums;
 
 public enum ShipmentStatus
 {
-    Assigned,
-    InTransit ,
-    Delivered,
-    Cancelled
+    Assigned = 1,
+    InTransit = 2,
+    Delivered = 3,
+    Cancelled = 4
 }

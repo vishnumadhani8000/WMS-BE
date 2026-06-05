@@ -35,74 +35,76 @@ public class ShipmentService : IShipmentService
 
     public async Task CreateShipmentAsync(
         MakeShipmentRequestDto dto,
-        long userId)
+        int userId)
     {
-        await _unitOfWork.BeginTransactionAsync();
 
+
+
+        var driver = await _driverRepository.GetByIdAsync(
+            dto.DriverId);
+
+        if (driver == null)
+        {
+            throw new KeyNotFoundException(
+                "Driver not found.");
+        }
+
+        if (!driver.IsAvailable)
+        {
+            throw new ArgumentException(
+                "Driver is not available.");
+        }
+
+        var vehicle = await _vehicleRepository.GetByIdAsync(
+            dto.VehicleId);
+
+        if (vehicle == null)
+        {
+            throw new KeyNotFoundException(
+                "Vehicle not found.");
+        }
+
+        if (!vehicle.IsAvailable)
+        {
+            throw new ArgumentException(
+                "Vehicle is not available.");
+        }
+        var orders = await _orderRepository.Query()
+            .IgnoreQueryFilters()
+            .Include(x => x.Address)
+            .Where(x => dto.OrderIds.Contains(x.Id))
+            .ToListAsync();
+
+        if (orders.Select(x => x.Address.CityId).Distinct().Count() > 1)
+        {
+            throw new ArgumentException(
+                "All selected orders must beint to the same city.");
+        }
+
+        if (orders.Count != dto.OrderIds.Count)
+        {
+            throw new ArgumentException(
+                "One or more orders were not found.");
+        }
+
+        if (orders.Any(x => x.ShipmentId != null))
+        {
+            throw new ArgumentException(
+                "One or more orders are already assigned to a shipment.");
+        }
+
+        var totalWeightKg = orders.Sum(x => x.TotalWeightKg);
+
+        if (vehicle.CapacityKg < totalWeightKg)
+        {
+            throw new ArgumentException(
+                $"Vehicle capacity is {vehicle.CapacityKg} KG but shipment weight is {totalWeightKg} KG.");
+        }
+
+
+        await _unitOfWork.BeginTransactionAsync();
         try
         {
-
-            var driver = await _driverRepository.GetByIdAsync(
-                dto.DriverId);
-
-            if (driver == null)
-            {
-                throw new KeyNotFoundException(
-                    "Driver not found.");
-            }
-
-            if (!driver.IsAvailable)
-            {
-                throw new ArgumentException(
-                    "Driver is not available.");
-            }
-
-            var vehicle = await _vehicleRepository.GetByIdAsync(
-                dto.VehicleId);
-
-            if (vehicle == null)
-            {
-                throw new KeyNotFoundException(
-                    "Vehicle not found.");
-            }
-
-            if (!vehicle.IsAvailable)
-            {
-                throw new ArgumentException(
-                    "Vehicle is not available.");
-            }
-            var orders = await _orderRepository.Query()
-                .IgnoreQueryFilters()
-                .Include(x => x.Address)
-                .Where(x => dto.OrderIds.Contains(x.Id))
-                .ToListAsync();
-
-            if (orders.Select(x => x.Address.CityId).Distinct().Count() > 1)
-            {
-                throw new ArgumentException(
-                    "All selected orders must belong to the same city.");
-            }
-
-            if (orders.Count != dto.OrderIds.Count)
-            {
-                throw new ArgumentException(
-                    "One or more orders were not found.");
-            }
-
-            if (orders.Any(x => x.ShipmentId != null))
-            {
-                throw new ArgumentException(
-                    "One or more orders are already assigned to a shipment.");
-            }
-
-            var totalWeightKg = orders.Sum(x => x.TotalWeightKg);
-
-            if (vehicle.CapacityKg < totalWeightKg)
-            {
-                throw new ArgumentException(
-                    $"Vehicle capacity is {vehicle.CapacityKg} KG but shipment weight is {totalWeightKg} KG.");
-            }
-
             var shipment = new Shipment
             {
                 DriverId = dto.DriverId,
@@ -199,7 +201,7 @@ public class ShipmentService : IShipmentService
             PageSize = filterDto.PageSize
         };
     }
-    public async Task<ShipmentDetailResponseDto> GetShipmentByIdAsync(long shipmentId)
+    public async Task<ShipmentDetailResponseDto> GetShipmentByIdAsync(int shipmentId)
     {
         var shipment = await _shipmentRepository.Query()
             .Include(x => x.Driver)
@@ -223,36 +225,38 @@ public class ShipmentService : IShipmentService
         return _mapper.Map<ShipmentDetailResponseDto>(
             shipment);
     }
-    public async Task UpdateShipmentStatusAsync(long shipmentId, ShipmentStatus status, long userId)
+    public async Task UpdateShipmentStatusAsync(int shipmentId, ShipmentStatus status, int userId)
     {
+
+        var shipment = await _shipmentRepository.Query()
+            .IgnoreQueryFilters()
+            .Include(x => x.Orders)
+            .Include(x => x.Driver)
+            .Include(x => x.Vehicle)
+            .FirstOrDefaultAsync(x => x.Id == shipmentId);
+
+        if (shipment == null)
+        {
+            throw new KeyNotFoundException(
+                "Shipment not found.");
+        }
+
+        if (shipment.Status == ShipmentStatus.Delivered)
+        {
+            throw new ArgumentException(
+                "Delivered shipment cannot be modified.");
+        }
+
+        if (shipment.Status == ShipmentStatus.Cancelled)
+        {
+            throw new ArgumentException(
+                "Cancelled shipment cannot be modified.");
+        }
+
         await _unitOfWork.BeginTransactionAsync();
 
         try
         {
-            var shipment = await _shipmentRepository.Query()
-                .IgnoreQueryFilters()
-                .Include(x => x.Orders)
-                .Include(x => x.Driver)
-                .Include(x => x.Vehicle)
-                .FirstOrDefaultAsync(x => x.Id == shipmentId);
-
-            if (shipment == null)
-            {
-                throw new KeyNotFoundException(
-                    "Shipment not found.");
-            }
-
-            if (shipment.Status == ShipmentStatus.Delivered)
-            {
-                throw new ArgumentException(
-                    "Delivered shipment cannot be modified.");
-            }
-
-            if (shipment.Status == ShipmentStatus.Cancelled)
-            {
-                throw new ArgumentException(
-                    "Cancelled shipment cannot be modified.");
-            }
 
             shipment.Status = status;
             shipment.UpdatedBy = userId;

@@ -31,8 +31,8 @@ public class VehicleController : ControllerBase
                 .Success(vehicles, "Vehicles fetched successfully."));
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var vehicle = await _service.GetByIdAsync(id);
 
@@ -47,7 +47,7 @@ public class VehicleController : ControllerBase
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -61,13 +61,13 @@ public class VehicleController : ControllerBase
                 .Success(vehicle, "Vehicle created successfully."));
     }
 
-    [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] VehicleRequestDto dto)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] VehicleRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -79,12 +79,12 @@ public class VehicleController : ControllerBase
                 .Success(vehicle, "Vehicle updated successfully."));
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }

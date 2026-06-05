@@ -5,8 +5,8 @@ namespace WMS.Domain.Entities;
 
 public class Shipment : BaseEntity
 {
-    public long DriverId { get; set; }
-    public long VehicleId { get; set; }
+    public int DriverId { get; set; }
+    public int VehicleId { get; set; }
     public ShipmentStatus Status { get; set; } = ShipmentStatus.Assigned;
     public decimal TotalWeightKg { get; set; }
     public DateTime? DispatchedAt { get; set; }

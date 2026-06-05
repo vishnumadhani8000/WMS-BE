@@ -29,7 +29,7 @@ public class CartService : ICartService
     // ADD TO CART
     public async Task<string> AddToCartAsync(
     AddToCartDto dto,
-    long createdBy)
+    int createdBy)
     {
         if (dto.Quantity <= 0)
         {
@@ -113,9 +113,9 @@ public class CartService : ICartService
     }
     // UPDATE QUANTITY
     public async Task<string> UpdateQuantityAsync(
-        long cartItemId,
+        int cartItemId,
         UpdateCartItemQuantityDto dto,
-        long updatedBy)
+        int updatedBy)
     {
         if (dto.Quantity <= 0)
         {
@@ -153,8 +153,8 @@ public class CartService : ICartService
 
     // DELETE CART ITEM
     public async Task<string> DeleteCartItemAsync(
-        long cartItemId,
-        long deletedBy)
+        int cartItemId,
+        int deletedBy)
     {
         var cartItem = await _cartItemRepository
             .Query()
@@ -177,7 +177,7 @@ public class CartService : ICartService
     }
 
     // GET CART
-    public async Task<CartResponseDto> GetCartAsync(long userId)
+    public async Task<CartResponseDto> GetCartAsync(int userId)
     {
         var cart = await _cartRepository
        .Query()

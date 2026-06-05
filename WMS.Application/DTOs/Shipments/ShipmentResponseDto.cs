@@ -2,7 +2,7 @@ namespace WMS.Application.DTOs.Shipments;
 
 public class ShipmentResponseDto
 {
-    public long ShipmentId { get; set; }
+    public int ShipmentId { get; set; }
 
     public string DriverName { get; set; } = string.Empty;
 

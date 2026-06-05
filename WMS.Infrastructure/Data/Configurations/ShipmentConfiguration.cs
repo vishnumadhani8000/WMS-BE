@@ -13,7 +13,7 @@ public class ShipmentConfiguration : IEntityTypeConfiguration<Shipment>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).UseIdentityColumn();
 
-        builder.Property(x => x.Status)        .IsRequired().HasConversion<string>();
+        builder.Property(x => x.Status)        .IsRequired();
         builder.Property(x => x.TotalWeightKg) .IsRequired().HasColumnType("decimal(12,3)");
         builder.Property(x => x.DispatchedAt)  .IsRequired(false);
         builder.Property(x => x.DeliveredAt)   .IsRequired(false);

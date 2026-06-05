@@ -4,6 +4,6 @@ namespace WMS.Application.DTOs.State;
 
 public class CityFilterRequestDTO : CommonFilterDto
 {
-    public long stateId { get; set; }
+    public int stateId { get; set; }
 
 }

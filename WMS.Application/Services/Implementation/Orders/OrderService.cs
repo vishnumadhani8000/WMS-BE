@@ -29,7 +29,7 @@ public class OrderService : IOrderService
     }
 
     public async Task<string> CreateOrderAsync(
-        long userId,
+        int userId,
         OrderRequestDto request)
     {
         var cart = await _cartRepository
@@ -132,9 +132,9 @@ public class OrderService : IOrderService
     }
 
     public async Task<OrderResponseDto> UpdateOrderAsync(
-        long orderId,
+        int orderId,
         OrderUpdateDto request,
-        long updatedBy)
+        int updatedBy)
     {
         var order = await _orderRepository
             .Query()
@@ -158,7 +158,7 @@ public class OrderService : IOrderService
     }
 
     public async Task<List<OrderResponseDto>> GetUserOrdersAsync(
-    long userId)
+    int userId)
     {
         var orders = await _orderRepository
             .Query()
@@ -281,7 +281,7 @@ public class OrderService : IOrderService
     }
 
     public async Task<AdminOrderDetailResponseDto>
-        GetOrderByIdAsync(long orderId)
+        GetOrderByIdAsync(int orderId)
     {
         var order = await _orderRepository
             .Query()

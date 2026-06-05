@@ -1,6 +1,6 @@
 public class OrderRequestDto
 {
-    public long CartId { get; set; }
-    public long AddressId { get; set; }
+    public int CartId { get; set; }
+    public int AddressId { get; set; }
     public string? Notes { get; set; }
 }

@@ -29,7 +29,7 @@ public class UserAddressService : IUserAddressService
     }
 
     public async Task<IEnumerable<UserAddressResponseDto>>
-        GetUserAddressesAsync(long userId)
+        GetUserAddressesAsync(int userId)
     {
         var addresses = await _addressRepository
             .Query()
@@ -44,7 +44,7 @@ public class UserAddressService : IUserAddressService
     }
 
     public async Task<UserAddressResponseDto>
-        GetByIdAsync(long addressId, long userId)
+        GetByIdAsync(int addressId, int userId)
     {
         var address = await _addressRepository
             .Query()
@@ -64,7 +64,7 @@ public class UserAddressService : IUserAddressService
     }
 
     public async Task<UserAddressResponseDto> CreateAsync(
-        long userId,
+        int userId,
         UserAddressRequestDto dto)
     {
         var stateExists = await _stateRepository
@@ -104,8 +104,8 @@ public class UserAddressService : IUserAddressService
     }
 
     public async Task UpdateAsync(
-        long addressId,
-        long userId,
+        int addressId,
+        int userId,
         UserAddressRequestDto dto)
     {
         var address = await _addressRepository
@@ -125,8 +125,8 @@ public class UserAddressService : IUserAddressService
     }
 
     public async Task DeleteAsync(
-        long addressId,
-        long userId)
+        int addressId,
+        int userId)
     {
         var address = await _addressRepository
             .GetFirstOrDefaultAsync(x =>

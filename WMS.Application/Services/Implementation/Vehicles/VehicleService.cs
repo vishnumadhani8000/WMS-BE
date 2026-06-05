@@ -70,7 +70,7 @@ public class VehicleService : IVehicleService
         };
     }
 
-    public async Task<VehicleResponseDto> GetByIdAsync(long id)
+    public async Task<VehicleResponseDto> GetByIdAsync(int id)
     {
         var vehicle = await _repository.GetByIdAsync(id);
 
@@ -85,7 +85,7 @@ public class VehicleService : IVehicleService
 
     public async Task<VehicleResponseDto> CreateAsync(
         VehicleRequestDto dto,
-        long userId)
+        int userId)
     {
         dto.PlateNumber = dto.PlateNumber
             .Trim()
@@ -115,9 +115,9 @@ public class VehicleService : IVehicleService
     }
 
     public async Task<VehicleResponseDto> UpdateAsync(
-        long id,
+        int id,
         VehicleRequestDto dto,
-        long userId)
+        int userId)
     {
         dto.PlateNumber = dto.PlateNumber
             .Trim()
@@ -157,8 +157,8 @@ public class VehicleService : IVehicleService
     }
 
     public async Task DeleteAsync(
-        long id,
-        long userId)
+        int id,
+        int userId)
     {
         var vehicle = await _repository.GetByIdAsync(id);
 

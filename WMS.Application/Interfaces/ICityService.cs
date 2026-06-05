@@ -6,10 +6,10 @@ namespace WMS.Application.Interfaces;
 
 public interface ICityService
 {
-    Task<CityResponseDTO>             GetByIdAsync(long id);
+    Task<CityResponseDTO>             GetByIdAsync(int id);
     Task<PagedResult<CityResponseDTO>> GetAllAsync(CityFilterRequestDTO requestDTO);
-    Task                               CreateAsync(CityRequestDTO dto, long createdBy);
-    Task                               UpdateAsync(long id, CityRequestDTO dto, long updatedBy);
-    Task                               DeleteAsync(long id, long deletedBy);
-    Task<List<CityResponseDTO>> GetCitiesByStateAsync(long stateId);
+    Task                               CreateAsync(CityRequestDTO dto, int createdBy);
+    Task                               UpdateAsync(int id, CityRequestDTO dto, int updatedBy);
+    Task                               DeleteAsync(int id, int deletedBy);
+    Task<List<CityResponseDTO>> GetCitiesByStateAsync(int stateId);
 }

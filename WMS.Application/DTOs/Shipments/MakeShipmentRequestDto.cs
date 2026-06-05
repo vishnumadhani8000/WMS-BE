@@ -1,8 +1,8 @@
 public class MakeShipmentRequestDto
 {
-    public List<long> OrderIds { get; set; } = [];
+    public List<int> OrderIds { get; set; } = [];
 
-    public long DriverId { get; set; }
+    public int DriverId { get; set; }
 
-    public long VehicleId { get; set; }
+    public int VehicleId { get; set; }
 }   

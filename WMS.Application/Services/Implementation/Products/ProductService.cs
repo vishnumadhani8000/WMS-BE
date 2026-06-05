@@ -81,7 +81,7 @@ public class ProductService : IProductService
             return result;
     }
 
-    public async Task<BaseProductDto> GetByIdAsync(long id)
+    public async Task<BaseProductDto> GetByIdAsync(int id)
     {
         var product = await _repository.GetByIdAsync(id);
 
@@ -92,7 +92,7 @@ public class ProductService : IProductService
 
         return _mapper.Map<BaseProductDto>(product);
     }
-    public async Task<BaseProductDto> CreateAsync(BaseProductDto dto, long userId)
+    public async Task<BaseProductDto> CreateAsync(BaseProductDto dto, int userId)
     {
         var product = _mapper.Map<Product>(dto);
 
@@ -103,7 +103,7 @@ public class ProductService : IProductService
         return _mapper.Map<BaseProductDto>(product);
     }
 
-    public async Task<BaseProductDto> UpdateAsync(BaseProductDto dto, long userId)
+    public async Task<BaseProductDto> UpdateAsync(BaseProductDto dto, int userId)
     {
         if (!dto.Id.HasValue)
         {
@@ -127,7 +127,7 @@ public class ProductService : IProductService
         return _mapper.Map<BaseProductDto>(product);
     }
 
-    public async Task DeleteAsync(long id, long userId)
+    public async Task DeleteAsync(int id, int userId)
     {
         var product = await _repository.GetByIdAsync(id);
 

@@ -71,7 +71,7 @@ public class DriverService : IDriverService
         };
     }
 
-    public async Task<DriverResponseDto> GetByIdAsync(long id)
+    public async Task<DriverResponseDto> GetByIdAsync(int id)
     {
         var driver = await _repository.GetByIdAsync(id);
 
@@ -86,7 +86,7 @@ public class DriverService : IDriverService
 
     public async Task<DriverResponseDto> CreateAsync(
     DriverRequestDto dto,
-    long userId)
+    int userId)
     {
         dto.Phone = dto.Phone.Trim();
         dto.LicenceNo = dto.LicenceNo?
@@ -124,9 +124,9 @@ public class DriverService : IDriverService
         return _mapper.Map<DriverResponseDto>(driver);
     }
     public async Task<DriverResponseDto> UpdateAsync(
-        long id,
+        int id,
         DriverRequestDto dto,
-        long userId)
+        int userId)
     {
         dto.Phone = dto.Phone.Trim();
         dto.LicenceNo = dto.LicenceNo?
@@ -175,8 +175,8 @@ public class DriverService : IDriverService
         return _mapper.Map<DriverResponseDto>(driver);
     }
     public async Task DeleteAsync(
-        long id,
-        long userId)
+        int id,
+        int userId)
     {
         var driver = await _repository.GetByIdAsync(id);
 

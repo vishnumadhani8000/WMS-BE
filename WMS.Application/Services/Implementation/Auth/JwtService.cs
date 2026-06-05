@@ -19,7 +19,7 @@ public class JwtService : IJwtService
         _config = config;
     }
 
-    public Task<string> GenerateAccessToken(long id, string email, UserRole role)
+    public Task<string> GenerateAccessToken(int id, string email, UserRole role)
     {
         var jwtKey = _config["Jwt:Key"]
             ?? throw new InvalidOperationException("JWT key is not configured.");

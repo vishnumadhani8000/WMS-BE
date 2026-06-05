@@ -2,9 +2,9 @@ namespace WMS.Application.DTOs.UserAddresses;
 
 public class UserAddressRequestDto
 {
-    public long StateId { get; set; }
+    public int StateId { get; set; }
 
-    public long CityId { get; set; }
+    public int CityId { get; set; }
 
     public string AddressLine { get; set; } = string.Empty;
 

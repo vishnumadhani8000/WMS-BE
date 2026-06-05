@@ -2,7 +2,7 @@ using WMS.Domain.Enums;
 
 public class AdminOrderDetailResponseDto
 {
-    public long OrderId { get; set; }
+    public int OrderId { get; set; }
 
     public string CustomerName { get; set; } = string.Empty;
 

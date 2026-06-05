@@ -5,7 +5,7 @@ namespace WMS.Domain.Entities;
 
 public class City : BaseEntity
 {
-    public long StateId { get; set; }
+    public int StateId { get; set; }
     public string Name { get; set; } = string.Empty;
 
     public User? CreatedByUser { get; set; }

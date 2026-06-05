@@ -62,7 +62,7 @@ public class StateService : IStateService
         };
     }
 
-    public async Task<StateResponseDTO> GetByIdAsync(long id)
+    public async Task<StateResponseDTO> GetByIdAsync(int id)
     {
         var state = await _repository
             .Query()
@@ -76,7 +76,7 @@ public class StateService : IStateService
 
     public async Task CreateAsync(
         StateRequestDTO dto,
-        long createdBy)
+        int createdBy)
     {
         dto.Name = dto.Name.Trim();
 
@@ -94,9 +94,9 @@ public class StateService : IStateService
     }
 
     public async Task UpdateAsync(
-        long id,
+        int id,
         StateRequestDTO dto,
-        long updatedBy)
+        int updatedBy)
     {
         dto.Name = dto.Name.Trim();
 
@@ -125,8 +125,8 @@ public class StateService : IStateService
     }
 
     public async Task DeleteAsync(
-        long id,
-        long deletedBy)
+        int id,
+        int deletedBy)
     {
         var state = await _repository
             .Query()

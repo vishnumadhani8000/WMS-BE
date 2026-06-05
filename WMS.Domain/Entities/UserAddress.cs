@@ -4,9 +4,9 @@ namespace WMS.Domain.Entities;
 
 public class UserAddress : BaseEntity
 {
-    public long UserId { get; set; }
-    public long StateId { get; set; }
-    public long CityId { get; set; }
+    public int UserId { get; set; }
+    public int StateId { get; set; }
+    public int CityId { get; set; }
     public string AddressLine { get; set; } = string.Empty;
     public string? Landmark { get; set; }
     public string Pincode { get; set; } = string.Empty;

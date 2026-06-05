@@ -9,20 +9,20 @@ public interface IDriverService
         CommonFilterDto requestDto);
 
     Task<DriverResponseDto> GetByIdAsync(
-        long id);
+        int id);
 
     Task<DriverResponseDto> CreateAsync(
         DriverRequestDto dto,
-        long userId);
+        int userId);
 
     Task<DriverResponseDto> UpdateAsync(
-        long id,
+        int id,
         DriverRequestDto dto,
-        long userId);
+        int userId);
 
     Task DeleteAsync(
-        long id,
-        long userId);
+        int id,
+        int userId);
 
     Task<List<AvailableDriversDto>> GetAvailableDriversAsync();
 }

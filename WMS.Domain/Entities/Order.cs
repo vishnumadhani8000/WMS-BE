@@ -5,10 +5,10 @@
 
     public class Order : BaseEntity
     {
-        public long UserId { get; set; }
-        public long CartId { get; set; }
-        public long AddressId { get; set; }
-        public long? ShipmentId { get; set; }
+        public int UserId { get; set; }
+        public int CartId { get; set; }
+        public int AddressId { get; set; }
+        public int? ShipmentId { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public decimal TotalWeightKg { get; set; }
         public decimal TotalPrice {get;set;}

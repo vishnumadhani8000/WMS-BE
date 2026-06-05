@@ -31,8 +31,8 @@ public class ProductController : ControllerBase
         );
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var result = await _service.GetByIdAsync(id);
 
@@ -48,7 +48,7 @@ public class ProductController : ControllerBase
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -61,13 +61,13 @@ public class ProductController : ControllerBase
         );
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(BaseProductDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -80,13 +80,13 @@ public class ProductController : ControllerBase
         );
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }

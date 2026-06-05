@@ -19,8 +19,8 @@ public class CityController : ControllerBase
         _cityService = cityService;
     }
 
-    private long UserId =>
-        long.Parse(
+    private int UserId =>
+        int.Parse(
             User.FindFirst(ClaimTypes.NameIdentifier)!.Value
         );
 
@@ -36,8 +36,8 @@ public class CityController : ControllerBase
         );
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var result = await _cityService.GetByIdAsync(id);
 
@@ -59,9 +59,9 @@ public class CityController : ControllerBase
         );
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-        long id,
+        int id,
         [FromBody] CityRequestDTO dto)
     {
         await _cityService.UpdateAsync(
@@ -75,8 +75,8 @@ public class CityController : ControllerBase
         );
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         await _cityService.DeleteAsync(
             id,
@@ -88,9 +88,9 @@ public class CityController : ControllerBase
         );
     }
 
-    [HttpGet("state/{stateId:long}")]
+    [HttpGet("state/{stateId:int}")]
     public async Task<IActionResult> GetCitiesByState(
-        long stateId)
+        int stateId)
     {
         var result = await _cityService
             .GetCitiesByStateAsync(stateId);

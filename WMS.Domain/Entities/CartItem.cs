@@ -4,9 +4,9 @@ namespace WMS.Domain.Entities;
 
 public class CartItem : BaseEntity
 {
-    public long CartId { get; set; }
+    public int CartId { get; set; }
 
-    public long ProductId { get; set; }
+    public int ProductId { get; set; }
 
     public int Quantity { get; set; }
 

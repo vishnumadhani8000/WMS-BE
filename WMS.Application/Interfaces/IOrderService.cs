@@ -7,17 +7,17 @@ namespace WMS.Application.Interfaces;
 public interface IOrderService
 {
     Task<string> CreateOrderAsync(
-        long userId,
+        int userId,
         OrderRequestDto request);
 
     Task<OrderResponseDto> UpdateOrderAsync(
-        long orderId,
+        int orderId,
         OrderUpdateDto request,
-        long updatedBy);
+        int updatedBy);
 
     Task<List<OrderResponseDto>> GetUserOrdersAsync(
-        long userId);
+        int userId);
 
     Task<PagedResult<AdminOrderResponseDto>> GetAllOrdersAsync(AdminOrderRequestDto requestDto);
-    Task<AdminOrderDetailResponseDto> GetOrderByIdAsync(long id);
+    Task<AdminOrderDetailResponseDto> GetOrderByIdAsync(int id);
 }

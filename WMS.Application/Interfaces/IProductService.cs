@@ -5,13 +5,13 @@ public interface IProductService
 {
     Task<PagedResult<BaseProductDto>> GetAllAsync(CommonFilterDto requestDto);
 
-    Task<BaseProductDto> GetByIdAsync(long id);
+    Task<BaseProductDto> GetByIdAsync(int id);
 
     Task<PagedResult<ProductResponseCustomerDto>>GetAllForCustomerAsync(CommonFilterDto requestDto);
 
-    Task<BaseProductDto> CreateAsync(BaseProductDto dto,long createdByUser);
+    Task<BaseProductDto> CreateAsync(BaseProductDto dto,int createdByUser);
 
-    Task<BaseProductDto> UpdateAsync(BaseProductDto dto,long updatedByUser);
+    Task<BaseProductDto> UpdateAsync(BaseProductDto dto,int updatedByUser);
 
-    Task DeleteAsync(long id,long deletedByUser);
+    Task DeleteAsync(int id,int deletedByUser);
 }

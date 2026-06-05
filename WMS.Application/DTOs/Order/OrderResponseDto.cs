@@ -3,7 +3,7 @@ using WMS.Domain.Enums;
 
 public class OrderResponseDto
 {
-    public long OrderId { get; set; }
+    public int OrderId { get; set; }
 
 
     public decimal TotalPrice { get; set; }

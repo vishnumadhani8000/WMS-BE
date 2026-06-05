@@ -4,7 +4,7 @@ namespace WMS.Domain.Entities;
 
 public class Cart : BaseEntity
 {
-    public long UserId { get; set; }
+    public int UserId { get; set; }
 
     public bool IsCheckOut{get;set;}
 

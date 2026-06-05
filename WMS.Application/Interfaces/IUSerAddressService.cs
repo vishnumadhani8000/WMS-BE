@@ -7,22 +7,22 @@ namespace WMS.Application.Services;
 public interface IUserAddressService
 {
     Task<IEnumerable<UserAddressResponseDto>> GetUserAddressesAsync(
-        long userId);
+        int userId);
 
     Task<UserAddressResponseDto> GetByIdAsync(
-        long addressId,
-        long userId);
+        int addressId,
+        int userId);
 
     Task<UserAddressResponseDto> CreateAsync(
-        long userId,
+        int userId,
         UserAddressRequestDto dto);
 
     Task UpdateAsync(
-        long addressId,
-        long userId,
+        int addressId,
+        int userId,
         UserAddressRequestDto dto);
 
     Task DeleteAsync(
-        long addressId,
-        long userId);
+        int addressId,
+        int userId);
 }

@@ -21,7 +21,7 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    private long UserId => Convert.ToInt64(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    private int UserId => Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
     [HttpPost]
     public async Task<IActionResult> CreateOrder(
@@ -41,7 +41,7 @@ public class OrdersController : ControllerBase
 
     [HttpPut("{orderId}")]
     public async Task<IActionResult> UpdateOrder(
-        long orderId,
+        int orderId,
         [FromBody] OrderUpdateDto request)
     {
         var order = await _orderService
@@ -72,8 +72,8 @@ public class OrdersController : ControllerBase
             )
         );
     }
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var order = await _orderService
             .GetOrderByIdAsync(id);

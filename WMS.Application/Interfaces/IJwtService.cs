@@ -4,6 +4,6 @@ namespace WMS.Application.Interfaces;
 
 public interface IJwtService
 {
-    Task<string> GenerateAccessToken(long id, string email, UserRole role);
+    Task<string> GenerateAccessToken(int id, string email, UserRole role);
     string GenerateRefreshToken();
 }

@@ -18,7 +18,7 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
         _dbSet = context.Set<T>();
     }
 
-    public async Task<T?> GetByIdAsync(long id, CancellationToken ct = default)
+    public async Task<T?> GetByIdAsync(int id, CancellationToken ct = default)
         => await _dbSet.FirstOrDefaultAsync(x => x.Id == id, ct);
 
     public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
@@ -73,7 +73,7 @@ public class CommonRepository<T> : ICommonRepository<T> where T : BaseEntity
 
     public async Task<int> SoftDeleteMultipleAsync(
        Expression<Func<T, bool>> predicate,
-       long deletedBy,
+       int deletedBy,
        CancellationToken ct = default)
     {
         var utcNow = DateTime.UtcNow;

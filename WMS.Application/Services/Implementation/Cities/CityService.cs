@@ -71,7 +71,7 @@ public class CityService : ICityService
         return result;
     }
 
-    public async Task<CityResponseDTO> GetByIdAsync(long id)
+    public async Task<CityResponseDTO> GetByIdAsync(int id)
     {
         var city = await _repository
             .Query()
@@ -87,7 +87,7 @@ public class CityService : ICityService
 
     public async Task CreateAsync(
         CityRequestDTO dto,
-        long createdBy)
+        int createdBy)
     {
         dto.Name = dto.Name.Trim();
 
@@ -110,7 +110,7 @@ public class CityService : ICityService
         await _repository.AddAsync(city);
     }
 
-    public async Task UpdateAsync(long id, CityRequestDTO dto, long updatedBy)
+    public async Task UpdateAsync(int id, CityRequestDTO dto, int updatedBy)
     {
         dto.Name = dto.Name.Trim();
 
@@ -137,7 +137,7 @@ public class CityService : ICityService
 
         await _repository.UpdateAsync(city);
     }
-    public async Task DeleteAsync(long id, long deletedBy)
+    public async Task DeleteAsync(int id, int deletedBy)
     {
         var city = await _repository
             .Query()
@@ -151,7 +151,7 @@ public class CityService : ICityService
 
         await _repository.SoftDeleteAsync(city);
     }
-    public async Task<List<CityResponseDTO>> GetCitiesByStateAsync(long stateId)
+    public async Task<List<CityResponseDTO>> GetCitiesByStateAsync(int stateId)
     {
         var stateExists = await _stateRepository
             .ExistsAsync(x => x.Id == stateId);

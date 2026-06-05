@@ -2,7 +2,7 @@
 namespace WMS.Application.DTOs.Order;
 public class AdminOrderResponseDto
 {
-    public long OrderId { get; set; }
+    public int OrderId { get; set; }
 
     public string CustomerName { get; set; }
 

@@ -10,7 +10,7 @@ public class RefreshToken : BaseEntity
 
     public bool IsRevoked { get; set; } = false;
 
-    public long UserId { get; set; }
+    public int UserId { get; set; }
 
     public User User { get; set; } = null!;
 }

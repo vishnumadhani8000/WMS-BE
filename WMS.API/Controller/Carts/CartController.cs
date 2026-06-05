@@ -19,8 +19,8 @@ public class CartController : ControllerBase
         _cartService = cartService;
     }
 
-    private long UserId =>
-        long.Parse(
+    private int UserId =>
+        int.Parse(
             User.FindFirst(ClaimTypes.NameIdentifier)!.Value
         );
 
@@ -36,7 +36,7 @@ public class CartController : ControllerBase
 
 
     [HttpPut("items/{cartItemId}/quantity")]
-    public async Task<IActionResult> UpdateQuantity(long cartItemId, [FromBody] UpdateCartItemQuantityDto dto, CancellationToken ct)
+    public async Task<IActionResult> UpdateQuantity(int cartItemId, [FromBody] UpdateCartItemQuantityDto dto, CancellationToken ct)
     {
         var message = await _cartService
             .UpdateQuantityAsync(
@@ -50,7 +50,7 @@ public class CartController : ControllerBase
     }
     [HttpDelete("items/{cartItemId}")]
     public async Task<IActionResult> DeleteCartItem(
-     long cartItemId,
+     int cartItemId,
      CancellationToken ct)
     {
         var message = await _cartService

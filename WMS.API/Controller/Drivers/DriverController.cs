@@ -33,8 +33,8 @@ public class DriverController : ControllerBase
                     "Drivers fetched successfully."));
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var driver = await _service.GetByIdAsync(id);
 
@@ -52,7 +52,7 @@ public class DriverController : ControllerBase
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -68,15 +68,15 @@ public class DriverController : ControllerBase
                     "Driver created successfully."));
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-        long id,
+        int id,
         [FromBody] DriverRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -93,13 +93,13 @@ public class DriverController : ControllerBase
                     "Driver updated successfully."));
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }

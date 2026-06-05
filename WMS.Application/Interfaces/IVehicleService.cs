@@ -7,21 +7,21 @@ namespace WMS.Application.Interfaces;
 public interface IVehicleService
 {
     Task<PagedResult<VehicleResponseDto>> GetAllAsync(CommonFilterDto requestDto);
-    Task<VehicleResponseDto> GetByIdAsync(long id);
+    Task<VehicleResponseDto> GetByIdAsync(int id);
     Task<VehicleResponseDto> CreateAsync(
         VehicleRequestDto dto,
-        long userId
+        int userId
     );
 
     Task<VehicleResponseDto> UpdateAsync(
-        long id,
+        int id,
         VehicleRequestDto dto,  
-        long userId
+        int userId
     );
 
     Task DeleteAsync(
-        long id,
-        long userId
+        int id,
+        int userId
     );
     Task<List<AvailableVehicleDto>>GetAvailableVehiclesAsync(decimal totalWeightKg);
 }

@@ -19,8 +19,8 @@ public class StateController : ControllerBase
         _stateService = stateService;
     }
 
-    private long UserId =>
-        long.Parse(
+    private int UserId =>
+        int.Parse(
             User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
     [HttpGet]
@@ -34,8 +34,8 @@ public class StateController : ControllerBase
                 .Success(result, "States fetched successfully."));
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var result = await _stateService.GetByIdAsync(id);
 
@@ -55,9 +55,9 @@ public class StateController : ControllerBase
                 .Success("State created successfully."));
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-        long id,
+        int id,
         [FromBody] StateRequestDTO dto)
     {
         await _stateService.UpdateAsync(
@@ -70,8 +70,8 @@ public class StateController : ControllerBase
                 .Success("State updated successfully."));
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         await _stateService.DeleteAsync(
             id,

@@ -21,8 +21,8 @@ public class UserAddressesController : ControllerBase
         _service = service;
     }
 
-    private long UserId =>
-        Convert.ToInt64(
+    private int UserId =>
+        Convert.ToInt32(
             User.FindFirstValue(
                 ClaimTypes.NameIdentifier));
 
@@ -37,8 +37,8 @@ public class UserAddressesController : ControllerBase
                 .Success(addresses));
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var address = await _service
             .GetByIdAsync(id, UserId);
@@ -62,9 +62,9 @@ public class UserAddressesController : ControllerBase
                     "Address created successfully."));
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-        long id,
+        int id,
         [FromBody] UserAddressRequestDto dto)
     {
         await _service
@@ -76,8 +76,8 @@ public class UserAddressesController : ControllerBase
                     "Address updated successfully."));
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         await _service
             .DeleteAsync(id, UserId);

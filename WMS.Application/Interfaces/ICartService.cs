@@ -7,11 +7,11 @@ public interface ICartService
 {
     Task<string > AddToCartAsync(
         AddToCartDto dto,
-        long createdBy);
+        int createdBy);
 
-    Task<string> UpdateQuantityAsync(long cartItemId,UpdateCartItemQuantityDto dto, long updatedBy);
+    Task<string> UpdateQuantityAsync(int cartItemId,UpdateCartItemQuantityDto dto, int updatedBy);
 
-    Task<string> DeleteCartItemAsync(long cartItemId,long deletedBy);
+    Task<string> DeleteCartItemAsync(int cartItemId,int deletedBy);
 
-    Task<CartResponseDto> GetCartAsync(long userId);
+    Task<CartResponseDto> GetCartAsync(int userId);
 }

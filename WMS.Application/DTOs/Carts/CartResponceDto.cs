@@ -2,9 +2,9 @@ namespace WMS.Application.DTOs.Carts;
 
 public class CartResponseDto
 {
-    public long CartId { get; set; }
+    public int CartId { get; set; }
 
-    public long UserId { get; set; }
+    public int UserId { get; set; }
 
     public decimal TotalWeightKg { get; set; }
 

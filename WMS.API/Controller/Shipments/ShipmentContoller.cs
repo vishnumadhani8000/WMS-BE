@@ -28,7 +28,7 @@ public class ShipmentController : ControllerBase
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
@@ -59,9 +59,9 @@ public class ShipmentController : ControllerBase
         );
     }
 
-    [HttpGet("{shipmentId:long}")]
+    [HttpGet("{shipmentId:int}")]
     public async Task<IActionResult> GetShipmentById(
-        long shipmentId)
+        int shipmentId)
     {
         var shipment =
             await _service.GetShipmentByIdAsync(
@@ -76,13 +76,13 @@ public class ShipmentController : ControllerBase
         );
     }
 
-    [HttpPut("{shipmentId:long}/status")]
-    public async Task<IActionResult> UpdateShipmentStatus(long shipmentId,[FromBody] UpdateShipmentStatusRequestDto dto)
+    [HttpPut("{shipmentId:int}/status")]
+    public async Task<IActionResult> UpdateShipmentStatus(int shipmentId,[FromBody] UpdateShipmentStatusRequestDto dto)
     {
         var userIdClaim =
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!long.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId))
         {
             return Unauthorized();
         }
